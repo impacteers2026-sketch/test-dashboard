@@ -8,7 +8,7 @@
 <title>Marketing Intelligence Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://accounts.google.com/gsi/client" async></script>
+
 <style>
 /* ════ TOKENS ════ */
 :root{
@@ -631,43 +631,31 @@ tr:hover td{background:var(--s2);}
 <div class="conn-overlay" id="connOverlay">
   <div class="conn-modal">
     <div class="cmh">
-      <div><div class="cmh-t">Connect Data Sources</div><div class="cmh-s">Sign in once — all selected properties sync and aggregate automatically</div></div>
+      <div><div class="cmh-t">Connect Data Sources</div><div class="cmh-s">Sign in with your own account — no technical setup required</div></div>
       <button class="cmh-x" onclick="toggleConn(false)">✕</button>
     </div>
 
-    <!-- ANTHROPIC AI -->
+    <!-- AI STATUS (configured server-side, read-only here) -->
     <div class="cplat">
       <div class="cplat-hd">
         <div class="cplat-ic ic-ai">✦</div>
-        <div><div class="cplat-nm">AI Analyst (Anthropic Claude)</div><div class="cplat-sb">Live AI chat powered by Claude Sonnet · Streams real-time analysis</div></div>
-        <span class="cpill" id="aiPill" style="background:var(--s3);color:var(--sub)">No Key</span>
+        <div><div class="cplat-nm">AI Analyst — OpenRouter</div><div class="cplat-sb">Configured server-side · Streams real-time marketing analysis</div></div>
+        <span class="cpill" id="aiPill" style="background:var(--gd);color:var(--green)">Ready</span>
       </div>
-      <div class="cinfo">Your API key is stored in session memory only — it clears when you close this tab. Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>.</div>
-      <div class="csetup-row">
-        <input class="cinput" type="password" id="anthropicKey" placeholder="sk-ant-api03-…">
-        <button class="cbtn" onclick="saveAnthropicKey()">Save Key</button>
-        <button class="cbtn ghost" onclick="clearAnthropicKey()">Clear</button>
-      </div>
+      <div class="cinfo" style="margin-bottom:0">The AI key is stored securely on the server. You don't need to enter anything — just ask questions in the Segments &amp; AI tab.</div>
     </div>
 
-    <!-- GOOGLE -->
+    <!-- GOOGLE — one-click OAuth -->
     <div class="cplat">
       <div class="cplat-hd">
         <div class="cplat-ic ic-g">G</div>
         <div><div class="cplat-nm">Google</div><div class="cplat-sb">Analytics 4 (Organic) · Search Console · Business Profile</div></div>
         <span class="cpill cpill-off" id="gPill">Not Connected</span>
       </div>
-      <div class="csetup-row" id="gSignRow">
-        <input class="cinput" id="gClientId" placeholder="OAuth Client ID  —  xxxxxxxx.apps.googleusercontent.com">
-        <button class="cbtn" id="gSignBtn" onclick="doGoogleConnect()">Sign in with Google</button>
-        <button class="cbtn ghost" onclick="toggleGuide('gGuide')" title="Setup guide">?</button>
-      </div>
-      <div class="cguide" id="gGuide">
-        <div class="cg-step"><span class="cg-n">1</span><span>Go to <strong>console.cloud.google.com</strong> → New Project</span></div>
-        <div class="cg-step"><span class="cg-n">2</span><span>Enable: <strong>Google Analytics Data API</strong>, <strong>Search Console API</strong>, <strong>My Business Account Management API</strong>, <strong>Business Profile Performance API</strong></span></div>
-        <div class="cg-step"><span class="cg-n">3</span><span>APIs &amp; Services → Credentials → Create <strong>OAuth 2.0 Client ID</strong> (Web application)</span></div>
-        <div class="cg-step"><span class="cg-n">4</span><span>In <strong>Authorized JavaScript Origins</strong> add: <code id="gOriginHint" style="background:var(--s1);border:1px solid var(--b2);padding:2px 6px;border-radius:4px;font-size:9px;color:var(--green);font-family:monospace">loading…</code> — must be HTTPS in production</span></div>
-        <div class="cg-step"><span class="cg-n">5</span><span>Paste the <strong>Client ID</strong> above and click <em>Sign in with Google</em></span></div>
+      <div id="gSignRow" style="margin-bottom:10px">
+        <button class="cbtn" id="gSignBtn" onclick="window.location.href='/auth/google'" style="width:100%;padding:10px">
+          Sign in with Google
+        </button>
       </div>
       <div id="gLists" style="display:none">
         <div class="cmulti"><div class="cmulti-hd"><span class="cmulti-lbl">GA4 Properties</span><span class="cmulti-all" onclick="selAll('ga4')">Select All</span></div><div class="clist" id="ga4List"></div></div>
@@ -677,43 +665,28 @@ tr:hover td{background:var(--s2);}
       </div>
     </div>
 
-    <!-- META -->
+    <!-- META — one-click OAuth -->
     <div class="cplat">
       <div class="cplat-hd">
         <div class="cplat-ic ic-m">f</div>
         <div><div class="cplat-nm">Meta</div><div class="cplat-sb">Facebook Pages · Instagram Business · Meta Ads Manager</div></div>
         <span class="cpill cpill-off" id="mPill">Not Connected</span>
       </div>
-      <div class="csetup-row" id="mSignRow">
-        <input class="cinput" id="mAppId" placeholder="Meta App ID  —  000000000000000">
-        <button class="cbtn" onclick="doMetaConnect()">Connect with Meta</button>
-        <button class="cbtn ghost" onclick="toggleGuide('mGuide')" title="Setup guide">?</button>
-      </div>
-      <div class="cguide" id="mGuide">
-        <div class="cg-step"><span class="cg-n">1</span><span>Go to <strong>developers.facebook.com</strong> → My Apps → Create App → choose <strong>Business</strong></span></div>
-        <div class="cg-step"><span class="cg-n">2</span><span>Add <strong>Facebook Login</strong> product → Settings → paste your dashboard URL in Valid OAuth Redirect URIs</span></div>
-        <div class="cg-step"><span class="cg-n">3</span><span>Basic Settings → add your dashboard URL to <strong>App Domains</strong></span></div>
-        <div class="cg-step"><span class="cg-n">4</span><span>Paste <strong>App ID</strong> above and click <em>Connect with Meta</em></span></div>
+      <div id="mSignRow" style="margin-bottom:10px">
+        <button class="cbtn" onclick="window.location.href='/auth/meta'" style="width:100%;padding:10px;background:#1877f2;color:#fff">
+          Connect with Meta
+        </button>
       </div>
       <div id="mLists" style="display:none">
         <div class="cmulti"><div class="cmulti-hd"><span class="cmulti-lbl">Facebook Pages</span><span class="cmulti-all" onclick="selAll('fbpages')">Select All</span></div><div class="clist" id="fbList"></div></div>
         <div class="cmulti"><div class="cmulti-hd"><span class="cmulti-lbl">Instagram Accounts</span><span class="cmulti-all" onclick="selAll('ig')">Select All</span></div><div class="clist" id="igList"></div></div>
         <div class="cmulti">
           <div class="cmulti-hd"><span class="cmulti-lbl">Meta Ads — Ad Account ID (optional)</span></div>
-          <input class="cinput" id="mAdAccountId" placeholder="Ad Account ID  —  act_000000000000000" style="width:100%;margin-top:4px">
-          <div style="font-size:9px;color:var(--sub);margin-top:4px">Find this in Meta Business Suite → Ad Accounts. Required for live Ads spend &amp; lead data.</div>
+          <input class="cinput" id="mAdAccountId" placeholder="act_000000000000000" style="width:100%;margin-top:4px">
+          <div style="font-size:9px;color:var(--sub);margin-top:4px">From Meta Business Suite → Ad Accounts. Required for live spend &amp; leads data.</div>
         </div>
         <button class="cbtn ghost sm" style="margin-top:6px" onclick="disconnectMeta()">Disconnect Meta</button>
       </div>
-    </div>
-
-    <!-- GOOGLE ADS NOTE -->
-    <div class="cplat" style="opacity:.8">
-      <div class="cplat-hd">
-        <div class="cplat-ic ic-ga">G</div>
-        <div><div class="cplat-nm">Google Ads <span style="font-size:10px;color:var(--sub)">— Coming Soon</span></div><div class="cplat-sb">Requires a backend proxy + Google Ads API Developer Token</div></div>
-      </div>
-      <div class="cinfo">Google Ads API requires a <strong>Developer Token</strong> (apply via Google Ads account) and cannot safely run client-side. To enable this: deploy a lightweight serverless function (Vercel/Netlify) that proxies requests to <code style="font-size:9px">googleads.googleapis.com</code>. <a href="https://developers.google.com/google-ads/api/docs/start" target="_blank">Read the docs →</a></div>
     </div>
 
     <div class="conn-foot">
@@ -872,8 +845,8 @@ function updatePeriodBadge(){
 function onRangeChange(){
   updatePeriodBadge();
   // Re-sync if connected
-  const gOn=CONN.google.token&&Date.now()<CONN.google.expiry;
-  const mOn=!!CONN.meta.token;
+  const gOn=connectedProps.google.connected;
+  const mOn=connectedProps.meta.connected;
   if(gOn||mOn) syncAll();
 }
 
@@ -1088,402 +1061,63 @@ function refreshPivot(pmap){
   });
 }
 
-// ════════════════════════════════════════════
-//  AI — ANTHROPIC API (STREAMING)
-// ════════════════════════════════════════════
-let aiHistory=[];
-
-function buildCTX(){
-  const kpis={};
-  document.querySelectorAll('.kcard').forEach(card=>{
-    const lbl=card.querySelector('.kcard-lbl')?.textContent.trim();
-    const val=card.querySelector('.kcard-val')?.textContent.trim();
-    if(lbl&&val) kpis[lbl]=val;
-  });
-  const isLive=CONN.google.token&&Date.now()<CONN.google.expiry;
-  const range=document.getElementById('rangeSelect')?.value||'Last 30 Days';
-  return `You are a senior marketing analyst reviewing a ${isLive?'LIVE':'sample'} marketing dashboard.
-
-DATE RANGE: ${range}
-DATA: ${isLive?'Live from Google Analytics, Search Console, GBP':'Sample data — user has not connected live sources yet'}
-
-CURRENT KPIs:
-${Object.entries(kpis).map(([k,v])=>`• ${k}: ${v}`).join('\n')}
-
-SEGMENTATION CONTEXT:
-• Quick Wins: /services/seo pos 3.2 CTR 4.4%, /contact pos 2.1 CTR 4.3%
-• Needs Attention: /blog/content pos 14.2 CTR 1.4% but 34.6K impressions (massive opportunity)
-• Opportunities: local business marketing pos 18.4, on-page seo tips pos 16.2, best seo tools pos 15.3
-
-Be specific, concise, and actionable. Use bullet points. Reference exact metrics. No fluff.`;
-}
-
-function aiMsg(role,text){
-  const c=document.getElementById('aiMsgs');
-  const d=document.createElement('div');
-  d.className='msg '+role;
-  d.innerHTML=formatAI(text);
-  c.appendChild(d);
-  c.scrollTop=c.scrollHeight;
-  return d;
-}
-
-async function aiSend(){
-  const inp=document.getElementById('aiIn');
-  const btn=document.getElementById('aiBtn');
-  const txt=inp.value.trim();
-  if(!txt)return;
-  aiHistory.push({role:'user',content:txt});
-  aiMsg('usr',txt);
-  inp.value='';
-  btn.disabled=true;btn.textContent='…';
-
-  const apiKey=CONN.anthropic.key;
-  if(!apiKey){
-    // Demo mode
-    setTimeout(()=>{
-      const resp=`I'm running in **demo mode** (no Anthropic API key set). Here's a pre-loaded insight:\n\n• Your /blog/content page has **34.6K impressions** at position 14.2 with only 1.4% CTR — this is your biggest quick win. Improving the title tag and meta description alone could 2-3× your clicks without building a single backlink.\n\n• To get live AI analysis powered by Claude, add your Anthropic API key in **Connect Sources → AI Analyst**.`;
-      aiHistory.push({role:'assistant',content:resp});
-      aiMsg('ai',resp);
-      btn.disabled=false;btn.textContent='Send';
-    },600);
-    return;
-  }
-
-  try{
-    const response=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'content-type':'application/json',
-        'x-api-key':apiKey,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1024,
-        stream:true,
-        system:buildCTX(),
-        messages:aiHistory.slice(-10)
-      })
-    });
-
-    if(!response.ok){
-      const err=await response.json().catch(()=>({error:{message:'Unknown error'}}));
-      throw new Error(err.error?.message||`HTTP ${response.status}`);
-    }
-
-    const reader=response.body.getReader();
-    const decoder=new TextDecoder();
-    const c=document.getElementById('aiMsgs');
-    const msgEl=document.createElement('div');
-    msgEl.className='msg ai';
-    msgEl.innerHTML='<span class="cursor">▌</span>';
-    c.appendChild(msgEl);c.scrollTop=c.scrollHeight;
-
-    let accumulated='',buffer='';
-    while(true){
-      const{done,value}=await reader.read();
-      if(done)break;
-      buffer+=decoder.decode(value,{stream:true});
-      const lines=buffer.split('\n');
-      buffer=lines.pop()||'';
-      for(const line of lines){
-        if(!line.startsWith('data: '))continue;
-        const data=line.slice(6).trim();
-        if(data==='[DONE]')continue;
-        try{
-          const parsed=JSON.parse(data);
-          if(parsed.type==='content_block_delta'&&parsed.delta?.type==='text_delta'){
-            accumulated+=parsed.delta.text;
-            msgEl.innerHTML=formatAI(accumulated)+'<span class="cursor">▌</span>';
-            c.scrollTop=c.scrollHeight;
-          }
-        }catch(e){}
-      }
-    }
-    msgEl.innerHTML=formatAI(accumulated);
-    aiHistory.push({role:'assistant',content:accumulated});
-  }catch(e){
-    aiMsg('ai',`⚠️ **Error:** ${e.message}<br><br>Check your API key in Connect Sources → AI Analyst.`);
-  }
-  btn.disabled=false;btn.textContent='Send';
-}
-
-function initAI(){
-  const hasKey=!!CONN.anthropic.key;
-  document.getElementById('aiKeyStatus').textContent=hasKey?'Live — Claude Sonnet':'Demo mode';
-  document.getElementById('aiKeyStatus').className='ai-key-status'+(hasKey?' connected':'');
-  document.getElementById('aiSetupNote').style.display=hasKey?'none':'block';
-  aiMsg('ai',`Hello! I've reviewed your marketing dashboard. Here's what stands out:\n\n**Organic:** Growing well (+8.2% traffic) but average position 14.3 leaves a big gap — pages in positions 11-20 with high impressions are your #1 SEO lever.\n\n**Paid:** ROAS 4.2× is solid. Competitor Terms at $34.44 CPA vs Brand Search at $20.00 — that's a 72% gap worth reviewing.\n\n**GBP is outperforming:** WhatsApp chats up 24.3% signals high purchase intent. This channel deserves more investment.\n\n**Social leads growing fast** (+31.7%) but volume (54 leads) is still low relative to 24.3K followers. Engagement rate dipping — content mix needs review.\n\n${hasKey?'Ask me anything — I have full context of your live data.':'Ask anything — I\'ll give pre-loaded insights. Connect an API key for live Claude analysis.'}`);
-}
 
 // ════════════════════════════════════════════
-//  REVIEW REPLY
+//  CONNECTION STATE (no tokens in browser)
 // ════════════════════════════════════════════
-async function replyReview(reviewId,btn){
-  const inp=document.getElementById('ri_'+reviewId);
-  const text=inp?.value.trim();
-  if(!text){showToast('Write a reply first.','error');return;}
-  const gOn=CONN.google.token&&Date.now()<CONN.google.expiry;
-  if(!gOn){showToast('Sign in with Google to send replies via GBP.','error');return;}
-  btn.disabled=true;btn.textContent='Sending…';
-  // Find GBP location to reply under
-  const loc=CONN.google.gbp.find(l=>l.selected);
-  if(!loc){showToast('No GBP location selected.','error');btn.disabled=false;btn.textContent='Reply via GBP';return;}
-  try{
-    // GBP Review Reply API
-    const locId=loc.id.includes('/')?loc.id.split('/locations/')[1]:loc.id;
-    const r=await fetch(`https://mybusiness.googleapis.com/v4/accounts/-/locations/${locId}/reviews/${reviewId}/reply`,{
-      method:'PUT',
-      headers:{Authorization:'Bearer '+CONN.google.token,'Content-Type':'application/json'},
-      body:JSON.stringify({comment:text})
-    });
-    if(r.ok){
-      showToast('Reply posted to Google Business Profile ✓','success');
-      inp.value='';
-      btn.textContent='Replied ✓';
-    }else{
-      throw new Error('API returned '+r.status);
-    }
-  }catch(e){
-    showToast('Could not post reply: '+e.message+'. The review ID used here is sample data — connect real GBP data to enable replies.','error',5000);
-    btn.disabled=false;btn.textContent='Reply via GBP';
-  }
-}
-
-// ════════════════════════════════════════════
-//  CONNECTION SYSTEM (sessionStorage)
-// ════════════════════════════════════════════
-let CONN={
-  google:{clientId:'',token:'',expiry:0,ga4:[],gsc:[],gbp:[]},
-  meta:{appId:'',token:'',pages:[],ig:[],adAccountId:''},
-  anthropic:{key:''}
+let connectedProps={
+  google:{connected:false,ga4:[],gsc:[],gbp:[]},
+  meta:{connected:false,pages:[],ig:[],adAccountId:''}
 };
 
-function loadConn(){
-  try{const s=sessionStorage.getItem('mkt_conn_v2');if(s)CONN=JSON.parse(s);}catch(e){}
-  const gcEl=document.getElementById('gClientId');
-  const maEl=document.getElementById('mAppId');
-  const akEl=document.getElementById('anthropicKey');
-  const adEl=document.getElementById('mAdAccountId');
-  if(gcEl)gcEl.value=CONN.google.clientId||'';
-  if(maEl)maEl.value=CONN.meta.appId||'';
-  if(akEl)akEl.value=CONN.anthropic.key?'sk-ant-…(saved)':'';
-  if(adEl)adEl.value=CONN.meta.adAccountId||'';
-  if(CONN.google.token&&Date.now()<CONN.google.expiry)renderGLists();
-  if(CONN.meta.token)renderMLists();
-  updateAIPill();
-  updateTrigger();
-}
+(function handleURLParams(){
+  const p=new URLSearchParams(window.location.search);
+  if(p.get('connected')){
+    showToast((p.get('connected')==='google'?'Google':'Meta')+' connected ✓ Fetching your properties…','success',4000);
+    history.replaceState({},'','/');
+  }
+  if(p.get('error')){
+    showToast('Sign-in error: '+decodeURIComponent(p.get('error')),'error',7000);
+    history.replaceState({},'','/');
+  }
+})();
 
-function saveConn(){
-  try{sessionStorage.setItem('mkt_conn_v2',JSON.stringify(CONN));}catch(e){}
+async function initConnection(){
+  try{
+    const status=await fetch('/auth/status').then(r=>r.json());
+    if(status.google||status.meta){
+      showToast('Loading your connected properties…','loading',5000);
+      const props=await fetch('/api/properties').then(r=>r.json());
+      connectedProps.google={connected:status.google,...props.google};
+      connectedProps.meta={connected:status.meta,...props.meta};
+      document.querySelectorAll('.toast-item').forEach(t=>t.remove());
+      if(status.google)renderGLists();
+      if(status.meta)renderMLists();
+      updateTrigger();
+      showToast('Properties loaded — click Sync All to pull live data','info',4000);
+    }
+  }catch(e){console.info('Backend not reachable, showing sample data');}
 }
 
 function toggleConn(show){
   document.getElementById('connOverlay').classList.toggle('on',show);
-  if(show){
-    loadConn();
-    // Show the exact origin the user needs to whitelist in Google Cloud Console
-    const hint=document.getElementById('gOriginHint');
-    if(hint){
-      const origin=window.location.origin;
-      hint.textContent=origin==='null'||origin==='file://'?'⚠ file:// not supported — serve via http(s)://':origin;
-      hint.style.color=origin.startsWith('https')?'var(--green)':'var(--orange)';
-    }
-  }
 }
 
-function toggleGuide(id){document.getElementById(id).classList.toggle('on');}
+function toggleGuide(id){document.getElementById(id)?.classList.toggle('on');}
 
-function saveAnthropicKey(){
-  const v=document.getElementById('anthropicKey').value.trim();
-  if(!v||v.includes('(saved)')){showToast('Enter a valid API key','error');return;}
-  CONN.anthropic.key=v;saveConn();updateAIPill();
-  document.getElementById('anthropicKey').value='sk-ant-…(saved)';
-  document.getElementById('aiKeyStatus').textContent='Live — Claude Sonnet';
-  document.getElementById('aiKeyStatus').className='ai-key-status connected';
-  document.getElementById('aiSetupNote').style.display='none';
-  document.getElementById('aiPill').textContent='Connected';
-  document.getElementById('aiPill').style.cssText='background:var(--gd);color:var(--green)';
-  showToast('Anthropic key saved for this session ✓','success');
-}
-
-function clearAnthropicKey(){
-  CONN.anthropic.key='';saveConn();updateAIPill();
-  document.getElementById('anthropicKey').value='';
-  document.getElementById('aiKeyStatus').textContent='Demo mode';
-  document.getElementById('aiKeyStatus').className='ai-key-status';
-  document.getElementById('aiSetupNote').style.display='block';
-  showToast('API key cleared','info');
-}
-
-function updateAIPill(){
-  const p=document.getElementById('aiPill');
-  if(!p)return;
-  if(CONN.anthropic.key){p.textContent='Connected';p.style.cssText='background:var(--gd);color:var(--green)';}
-  else{p.textContent='No Key';p.style.cssText='background:var(--s3);color:var(--sub)';}
-}
-
-// ════════════════════════════════════════════
-//  SELECT ALL / TOGGLE ITEMS
-// ════════════════════════════════════════════
 function selAll(type){
-  const arr={ga4:CONN.google.ga4,gsc:CONN.google.gsc,gbp:CONN.google.gbp,fbpages:CONN.meta.pages,ig:CONN.meta.ig}[type];
-  if(!arr)return;
+  const map={ga4:connectedProps.google.ga4,gsc:connectedProps.google.gsc,gbp:connectedProps.google.gbp,fbpages:connectedProps.meta.pages,ig:connectedProps.meta.ig};
+  const arr=map[type];if(!arr)return;
   const allOn=arr.every(x=>x.selected);
-  arr.forEach(x=>x.selected=!allOn);saveConn();
+  arr.forEach(x=>x.selected=!allOn);
   ['ga4','gsc','gbp'].includes(type)?renderGLists():renderMLists();
 }
 
 function toggleItem(type,idx){
-  const arr={ga4:CONN.google.ga4,gsc:CONN.google.gsc,gbp:CONN.google.gbp,fbpages:CONN.meta.pages,ig:CONN.meta.ig}[type];
-  if(arr&&arr[idx]!==undefined){arr[idx].selected=!arr[idx].selected;saveConn();}
+  const map={ga4:connectedProps.google.ga4,gsc:connectedProps.google.gsc,gbp:connectedProps.google.gbp,fbpages:connectedProps.meta.pages,ig:connectedProps.meta.ig};
+  const arr=map[type];
+  if(arr&&arr[idx]!==undefined)arr[idx].selected=!arr[idx].selected;
   ['ga4','gsc','gbp'].includes(type)?renderGLists():renderMLists();
-}
-
-// ════════════════════════════════════════════
-//  GOOGLE OAUTH
-// ════════════════════════════════════════════
-// ── GIS READINESS PROMISE ──
-function waitForGIS(timeout=12000){
-  return new Promise((resolve,reject)=>{
-    if(window.google?.accounts?.oauth2){resolve();return;}
-    const t0=Date.now();
-    const check=setInterval(()=>{
-      if(window.google?.accounts?.oauth2){clearInterval(check);resolve();return;}
-      if(Date.now()-t0>timeout){clearInterval(check);reject(new Error('Google Identity Services did not load. Check your internet connection and that accounts.google.com is reachable.'));}
-    },150);
-  });
-}
-
-// ── GIS ERROR MESSAGES ──
-const GIS_ERRORS={
-  popup_blocked_by_browser:'Popup was blocked by your browser. Click the address bar icon to allow popups for this site, then try again.',
-  popup_closed_by_user:'The sign-in window was closed. Try again when ready.',
-  access_denied:'Access was denied. Make sure your OAuth consent screen is configured and you approved all requested scopes.',
-  immediate_failed:'Silent sign-in failed — please click the button to sign in manually.',
-  invalid_client:'Invalid OAuth Client ID. Double-check the value from Google Cloud Console → Credentials.',
-  unauthorized_client:'This Client ID is not authorised for this origin. Add the URL shown in step 4 of the guide to Authorized JavaScript Origins in Google Cloud Console.',
-  redirect_uri_mismatch:'Redirect URI mismatch. Add this origin to Authorized JavaScript Origins in your OAuth client.',
-};
-
-async function doGoogleConnect(){
-  const cid=document.getElementById('gClientId').value.trim();
-  const btn=document.getElementById('gSignBtn');
-
-  // ── VALIDATE CLIENT ID FORMAT ──
-  if(!cid){showToast('Enter your Google OAuth Client ID first','error');return;}
-  if(!cid.endsWith('.apps.googleusercontent.com')){
-    showToast('Client ID must end with .apps.googleusercontent.com — copy it exactly from Google Cloud Console','error',6000);return;
-  }
-
-  // ── LOADING STATE ──
-  btn.disabled=true;btn.textContent='Loading Google…';
-
-  // ── WAIT FOR GIS SCRIPT ──
-  try{await waitForGIS();}
-  catch(e){
-    showToast(e.message,'error',8000);
-    btn.disabled=false;btn.textContent='Sign in with Google';return;
-  }
-
-  btn.textContent='Opening sign-in…';
-  CONN.google.clientId=cid;saveConn();
-
-  try{
-    const client=google.accounts.oauth2.initTokenClient({
-      client_id:cid,
-      scope:[
-        'https://www.googleapis.com/auth/analytics.readonly',
-        'https://www.googleapis.com/auth/webmasters.readonly',
-        'https://www.googleapis.com/auth/business.manage'
-      ].join(' '),
-
-      // ── ERROR CALLBACK — catches popup-blocked and other pre-auth errors ──
-      error_callback:(err)=>{
-        const msg=GIS_ERRORS[err.type]||`Sign-in error (${err.type}): ${err.message||'unknown'}`;
-        showToast(msg,'error',8000);
-        console.error('GIS error_callback:',err);
-        btn.disabled=false;btn.textContent='Sign in with Google';
-      },
-
-      // ── SUCCESS CALLBACK ──
-      callback:async(resp)=>{
-        if(resp.error){
-          const msg=GIS_ERRORS[resp.error]||`Google returned: ${resp.error} — ${resp.error_description||''}`;
-          showToast(msg,'error',8000);
-          console.error('GIS token error:',resp);
-          btn.disabled=false;btn.textContent='Sign in with Google';return;
-        }
-        CONN.google.token=resp.access_token;
-        CONN.google.expiry=Date.now()+resp.expires_in*1000;
-        saveConn();
-        btn.textContent='Fetching properties…';
-        showToast('Signed in ✓ Fetching your GA4, GSC and GBP properties…','loading',12000);
-        await Promise.allSettled([fetchGA4Props(),fetchGSCSites(),fetchGBPLocs()]);
-        document.querySelectorAll('.toast-item').forEach(t=>t.remove());
-        renderGLists();
-        showToast('Google connected ✓','success');
-        btn.disabled=false;btn.textContent='Sign in with Google';
-      }
-    });
-
-    // requestAccessToken MUST be called inside a user-gesture (it is — we're in onclick)
-    client.requestAccessToken({prompt:''});
-
-  }catch(e){
-    showToast('Failed to initialise Google sign-in: '+e.message,'error',8000);
-    console.error('initTokenClient error:',e);
-    btn.disabled=false;btn.textContent='Sign in with Google';
-  }
-}
-
-async function fetchGA4Props(){
-  try{
-    const r=await fetch('https://analyticsadmin.googleapis.com/v1beta/accountSummaries',{headers:{Authorization:'Bearer '+CONN.google.token}});
-    const d=await r.json();
-    const have=new Set(CONN.google.ga4.map(x=>x.id));
-    (d.accountSummaries||[]).forEach(a=>{
-      (a.propertySummaries||[]).forEach(p=>{
-        const id=p.property.replace('properties/','');
-        if(!have.has(id))CONN.google.ga4.push({id,name:p.displayName,acct:a.displayName,selected:true});
-      });
-    });
-    saveConn();
-  }catch(e){console.warn('GA4 fetch error:',e);}
-}
-
-async function fetchGSCSites(){
-  try{
-    const r=await fetch('https://searchconsole.googleapis.com/webmasters/v3/sites',{headers:{Authorization:'Bearer '+CONN.google.token}});
-    const d=await r.json();
-    const have=new Set(CONN.google.gsc.map(x=>x.url));
-    (d.siteEntry||[]).forEach(s=>{
-      if(!have.has(s.siteUrl))CONN.google.gsc.push({url:s.siteUrl,name:s.siteUrl.replace(/https?:\/\//,''),selected:true});
-    });
-    saveConn();
-  }catch(e){console.warn('GSC fetch error:',e);}
-}
-
-async function fetchGBPLocs(){
-  // FIXED: Uses new My Business Account Management API v1 (replaces deprecated v4)
-  try{
-    const ar=await fetch('https://mybusinessaccountmanagement.googleapis.com/v1/accounts',{headers:{Authorization:'Bearer '+CONN.google.token}});
-    const ad=await ar.json();
-    const have=new Set(CONN.google.gbp.map(x=>x.id));
-    for(const acct of(ad.accounts||[])){
-      try{
-        const lr=await fetch(`https://mybusinessinformation.googleapis.com/v1/${acct.name}/locations?readMask=name,title`,{headers:{Authorization:'Bearer '+CONN.google.token}});
-        const ld=await lr.json();
-        (ld.locations||[]).forEach(loc=>{
-          if(!have.has(loc.name))CONN.google.gbp.push({id:loc.name,name:loc.title||loc.name,acct:acct.accountName||acct.name,selected:true});
-        });
-      }catch(e){console.warn('GBP location fetch error for account',acct.name,e);}
-    }
-    saveConn();
-  }catch(e){console.warn('GBP accounts fetch error:',e);}
 }
 
 function renderGLists(){
@@ -1492,66 +1126,10 @@ function renderGLists(){
   document.getElementById('gSignRow').style.display='none';
   document.getElementById('gLists').style.display='block';
   document.getElementById('gDot').classList.add('live');
-  buildList('ga4List',CONN.google.ga4,'ga4',x=>x.name,x=>x.acct);
-  buildList('gscList',CONN.google.gsc,'gsc',x=>x.name,()=>'');
-  buildList('gbpList',CONN.google.gbp,'gbp',x=>x.name,x=>x.acct);
+  buildList('ga4List',connectedProps.google.ga4,'ga4',x=>x.name,x=>x.acct);
+  buildList('gscList',connectedProps.google.gsc,'gsc',x=>x.name,()=>'');
+  buildList('gbpList',connectedProps.google.gbp,'gbp',x=>x.name,x=>x.acct);
   updateTrigger();
-}
-
-function disconnectGoogle(){
-  CONN.google={clientId:'',token:'',expiry:0,ga4:[],gsc:[],gbp:[]};saveConn();
-  document.getElementById('gPill').textContent='Not Connected';
-  document.getElementById('gPill').className='cpill cpill-off';
-  document.getElementById('gSignRow').style.display='flex';
-  document.getElementById('gLists').style.display='none';
-  document.getElementById('gDot').classList.remove('live');
-  updateTrigger();showToast('Google disconnected','info');
-}
-
-// ════════════════════════════════════════════
-//  META OAUTH
-// ════════════════════════════════════════════
-function doMetaConnect(){
-  const appId=document.getElementById('mAppId').value.trim();
-  if(!appId){showToast('Enter your Meta App ID first','error');return;}
-  CONN.meta.appId=appId;saveConn();
-  const init=()=>{
-    FB.init({appId,cookie:true,xfbml:false,version:'v21.0'}); // FIXED: v19.0 → v21.0
-    FB.login(resp=>{
-      if(!resp.authResponse){showToast('Meta login cancelled or failed','error');return;}
-      CONN.meta.token=resp.authResponse.accessToken;saveConn();
-      showToast('Fetching pages and Instagram accounts…','loading',8000);
-      fetchMetaPages().then(()=>{renderMLists();showToast('Meta connected ✓','success');});
-    },{scope:'read_insights,pages_show_list,pages_read_engagement,instagram_basic,instagram_manage_insights,ads_read'});
-  };
-  if(window.FB){init();return;}
-  window.fbAsyncInit=init;
-  const s=document.createElement('script');
-  s.src='https://connect.facebook.net/en_US/sdk.js';s.async=true;s.defer=true;s.crossOrigin='anonymous';
-  document.head.appendChild(s);
-}
-
-async function fetchMetaPages(){
-  // FIXED: v19.0 → v21.0
-  const r=await fetch(`https://graph.facebook.com/v21.0/me/accounts?fields=id,name,access_token,instagram_business_account&access_token=${CONN.meta.token}`);
-  const d=await r.json();
-  const haveP=new Set(CONN.meta.pages.map(x=>x.id));
-  const haveI=new Set(CONN.meta.ig.map(x=>x.id));
-  for(const p of(d.data||[])){
-    if(!haveP.has(p.id))CONN.meta.pages.push({id:p.id,name:p.name,token:p.access_token,selected:true});
-    if(p.instagram_business_account&&!haveI.has(p.instagram_business_account.id)){
-      try{
-        const igId=p.instagram_business_account.id;
-        const ir=await fetch(`https://graph.facebook.com/v21.0/${igId}?fields=name,username&access_token=${p.access_token}`);
-        const ig=await ir.json();
-        CONN.meta.ig.push({id:igId,name:ig.username||ig.name||igId,pageToken:p.access_token,selected:true});
-      }catch(e){}
-    }
-  }
-  // Save ad account ID if user entered it
-  const adEl=document.getElementById('mAdAccountId');
-  if(adEl&&adEl.value.trim())CONN.meta.adAccountId=adEl.value.trim();
-  saveConn();
 }
 
 function renderMLists(){
@@ -1560,18 +1138,30 @@ function renderMLists(){
   document.getElementById('mSignRow').style.display='none';
   document.getElementById('mLists').style.display='block';
   document.getElementById('mDot').classList.add('live');
-  buildList('fbList',CONN.meta.pages,'fbpages',x=>x.name,()=>'Page');
-  buildList('igList',CONN.meta.ig,'ig',x=>x.name,()=>'Instagram');
+  buildList('fbList',connectedProps.meta.pages,'fbpages',x=>x.name,()=>'Page');
+  buildList('igList',connectedProps.meta.ig,'ig',x=>x.name,()=>'Instagram');
   const adEl=document.getElementById('mAdAccountId');
-  if(adEl)adEl.value=CONN.meta.adAccountId||'';
+  if(adEl)adEl.value=connectedProps.meta.adAccountId||'';
   updateTrigger();
 }
 
-function disconnectMeta(){
-  CONN.meta={appId:'',token:'',pages:[],ig:[],adAccountId:''};saveConn();
+async function disconnectGoogle(){
+  await fetch('/auth/disconnect/google',{method:'POST'});
+  connectedProps.google={connected:false,ga4:[],gsc:[],gbp:[]};
+  document.getElementById('gPill').textContent='Not Connected';
+  document.getElementById('gPill').className='cpill cpill-off';
+  document.getElementById('gSignRow').style.display='block';
+  document.getElementById('gLists').style.display='none';
+  document.getElementById('gDot').classList.remove('live');
+  updateTrigger();showToast('Google disconnected','info');
+}
+
+async function disconnectMeta(){
+  await fetch('/auth/disconnect/meta',{method:'POST'});
+  connectedProps.meta={connected:false,pages:[],ig:[],adAccountId:''};
   document.getElementById('mPill').textContent='Not Connected';
   document.getElementById('mPill').className='cpill cpill-off';
-  document.getElementById('mSignRow').style.display='flex';
+  document.getElementById('mSignRow').style.display='block';
   document.getElementById('mLists').style.display='none';
   document.getElementById('mDot').classList.remove('live');
   updateTrigger();showToast('Meta disconnected','info');
@@ -1580,345 +1170,202 @@ function disconnectMeta(){
 function buildList(containerId,arr,type,nameFn,tagFn){
   const c=document.getElementById(containerId);if(!c)return;
   if(!arr.length){c.innerHTML='<div class="cempty">No accounts found.</div>';return;}
-  c.innerHTML=arr.map((item,i)=>`<div class="citem${item.selected?' on':''}" onclick="toggleItem('${type}',${i})"><div class="cbox">${item.selected?'✓':''}</div><span class="citem-nm">${nameFn(item)}</span><span class="citem-tag">${tagFn(item)}</span></div>`).join('');
+  c.innerHTML=arr.map((item,i)=>
+    `<div class="citem${item.selected?' on':''}" onclick="toggleItem('${type}',${i})"><div class="cbox">${item.selected?'✓':''}</div><span class="citem-nm">${nameFn(item)}</span><span class="citem-tag">${tagFn(item)}</span></div>`
+  ).join('');
 }
 
 function updateTrigger(){
-  const gOn=CONN.google.token&&Date.now()<CONN.google.expiry;
-  const mOn=!!CONN.meta.token;
-  const total=(gOn?CONN.google.ga4.filter(x=>x.selected).length+CONN.google.gsc.filter(x=>x.selected).length+CONN.google.gbp.filter(x=>x.selected).length:0)+(mOn?CONN.meta.pages.filter(x=>x.selected).length+CONN.meta.ig.filter(x=>x.selected).length:0);
+  const gOn=connectedProps.google.connected;
+  const mOn=connectedProps.meta.connected;
+  const total=(gOn?connectedProps.google.ga4.filter(x=>x.selected).length+connectedProps.google.gsc.filter(x=>x.selected).length+connectedProps.google.gbp.filter(x=>x.selected).length:0)+(mOn?connectedProps.meta.pages.filter(x=>x.selected).length+connectedProps.meta.ig.filter(x=>x.selected).length:0);
   const btn=document.getElementById('connTrigger');
   const lbl=document.getElementById('connLbl');
-  if(gOn||mOn){
-    btn.classList.add('live');
-    btn.textContent=`${total} source${total!==1?'s':''} connected`;
-    lbl.textContent=`${total} live`;lbl.style.color='var(--green)';
-    document.getElementById('adsLabel').style.display=mOn&&CONN.meta.adAccountId?'none':'';
-  }else{
-    btn.classList.remove('live');
-    btn.textContent='Connect Sources';
-    lbl.textContent='No live data';lbl.style.color='';
-  }
+  if(gOn||mOn){btn.classList.add('live');btn.textContent=`${total} source${total!==1?'s':''} connected`;lbl.textContent=`${total} live`;lbl.style.color='var(--green)';}
+  else{btn.classList.remove('live');btn.textContent='Connect Sources';lbl.textContent='No live data';lbl.style.color='';}
 }
 
 // ════════════════════════════════════════════
-//  SYNC ALL — FIXED & COMPLETE
+//  SYNC ALL — backend proxy
 // ════════════════════════════════════════════
 async function syncAll(){
   const btn=document.getElementById('syncAllBtn');
   const st=document.getElementById('csyncStatus');
   if(btn){btn.disabled=true;btn.textContent='Syncing…';}
   if(st)st.textContent='';
-  showToast('Pulling data from all selected accounts…','loading',15000);
+  showToast('Pulling live data…','loading',20000);
   const tasks=[];
-  if(CONN.google.token){tasks.push(syncGA4());tasks.push(syncGSC());tasks.push(syncGBP());}
-  if(CONN.meta.token){tasks.push(syncMeta());tasks.push(syncInstagram());}
-  if(CONN.meta.token&&CONN.meta.adAccountId){tasks.push(syncMetaAds());}
+  if(connectedProps.google.connected){tasks.push(syncGA4(),syncGSC(),syncGBP());}
+  if(connectedProps.meta.connected){
+    tasks.push(syncMeta(),syncInstagram());
+    const adId=document.getElementById('mAdAccountId')?.value.trim();
+    if(adId){connectedProps.meta.adAccountId=adId;tasks.push(syncMetaAds(adId));}
+  }
   if(!tasks.length){
     document.querySelectorAll('.toast-item').forEach(t=>t.remove());
-    showToast('No connected sources to sync. Click Connect Sources.','info');
-    if(btn){btn.disabled=false;btn.textContent='Sync All Selected';}
-    return;
+    showToast('No connected sources. Click Connect Sources.','info');
+    if(btn){btn.disabled=false;btn.textContent='Sync All Selected';}return;
   }
   const results=await Promise.allSettled(tasks);
   document.querySelectorAll('.toast-item').forEach(t=>t.remove());
   const errs=results.filter(r=>r.status==='rejected');
   if(btn){btn.disabled=false;btn.textContent='Sync All Selected';}
-  if(st){
-    st.style.color=errs.length?'var(--red)':'var(--green)';
-    st.textContent=errs.length?`${errs.length} source(s) had errors`:'✓ Dashboard updated';
-  }
-  if(errs.length){
-    showToast(`Sync completed with ${errs.length} error(s). Check console for details.`,'error');
-    errs.forEach(e=>console.warn('Sync error:',e.reason));
-  }else{
-    showToast('All data synced successfully ✓','success');
-    launchConfetti();
-    const now=new Date();
-    document.getElementById('lastSyncLabel').innerHTML=`Last synced <span>${now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</span>`;
-  }
+  if(st){st.style.color=errs.length?'var(--red)":'var(--green)';st.textContent=errs.length?`${errs.length} source(s) had errors`:'✓ Dashboard updated';}
+  if(errs.length){showToast(`Sync completed with ${errs.length} error(s)`,'error');errs.forEach(e=>console.warn('Sync error:',e.reason));}
+  else{showToast('All data synced ✓','success');launchConfetti();const now=new Date();document.getElementById('lastSyncLabel').innerHTML=`Last synced <span>${now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</span>`;}
   updateTrigger();
 }
 
-// GA4 — FIXED: filters organic traffic only
 async function syncGA4(){
-  const sel=CONN.google.ga4.filter(p=>p.selected);if(!sel.length)return;
+  const sel=connectedProps.google.ga4.filter(p=>p.selected);if(!sel.length)return;
   const{start,end}=getDateRange();
   let totalSess=0,totalConv=0,daily=Array(30).fill(0);
   for(const prop of sel){
-    try{
-      const r=await fetch(`https://analyticsdata.googleapis.com/v1beta/properties/${prop.id}:runReport`,{
-        method:'POST',
-        headers:{Authorization:'Bearer '+CONN.google.token,'Content-Type':'application/json'},
-        body:JSON.stringify({
-          dateRanges:[{startDate:start,endDate:end}],
-          metrics:[{name:'sessions'},{name:'conversions'}],
-          dimensions:[{name:'date'}],
-          dimensionFilter:{
-            filter:{
-              fieldName:'sessionDefaultChannelGroup',
-              stringFilter:{matchType:'EXACT',value:'Organic Search'}
-            }
-          },
-          orderBys:[{dimension:{dimensionName:'date'}}]
-        })
-      });
-      const d=await r.json();
-      if(!d.rows){console.warn('GA4 no rows for property',prop.id,d);continue;}
-      d.rows.forEach((row,i)=>{
-        const s=parseInt(row.metricValues[0].value||0),c=parseInt(row.metricValues[1].value||0);
-        totalSess+=s;totalConv+=c;if(i<30)daily[i]+=s;
-      });
-    }catch(e){console.warn('GA4 sync error for',prop.id,e);}
+    const r=await fetch(`/api/ga4/report/${prop.id}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({dateRanges:[{startDate:start,endDate:end}],metrics:[{name:'sessions'},{name:'conversions'}],dimensions:[{name:'date'}],dimensionFilter:{filter:{fieldName:'sessionDefaultChannelGroup',stringFilter:{matchType:'EXACT',value:'Organic Search'}}},orderBys:[{dimension:{dimensionName:'date'}}]})});
+    const d=await r.json();if(d.error)throw new Error('GA4: '+d.error);
+    (d.rows||[]).forEach((row,i)=>{const s=parseInt(row.metricValues[0].value||0),c=parseInt(row.metricValues[1].value||0);totalSess+=s;totalConv+=c;if(i<30)daily[i]+=s;});
   }
-  setKPI('Organic Traffic',totalSess.toLocaleString());
-  setKPI('Organic Sessions',totalSess.toLocaleString());
-  setKPI('Organic Leads',totalConv.toLocaleString());
-  refreshTrafficChart(daily);
+  setKPI('Organic Traffic',totalSess.toLocaleString());setKPI('Organic Sessions',totalSess.toLocaleString());setKPI('Organic Leads',totalConv.toLocaleString());refreshTrafficChart(daily);
 }
 
-// GSC sync
 async function syncGSC(){
-  const sel=CONN.google.gsc.filter(s=>s.selected);if(!sel.length)return;
+  const sel=connectedProps.google.gsc.filter(s=>s.selected);if(!sel.length)return;
   const{start,end}=getDateRange();
-  let clicks=0,impr=0,posSum=0,posN=0;
-  const pmap={};
+  let clicks=0,impr=0,posSum=0,posN=0;const pmap={};
   for(const site of sel){
-    try{
-      const r=await fetch(`https://searchconsole.googleapis.com/webmasters/v3/sites/${encodeURIComponent(site.url)}/searchAnalytics/query`,{
-        method:'POST',
-        headers:{Authorization:'Bearer '+CONN.google.token,'Content-Type':'application/json'},
-        body:JSON.stringify({startDate:start,endDate:end,dimensions:['page','query'],rowLimit:200})
-      });
-      const d=await r.json();
-      (d.rows||[]).forEach(row=>{
-        clicks+=row.clicks;impr+=row.impressions;posSum+=row.position;posN++;
-        const[page,query]=row.keys;
-        if(!pmap[page]||row.clicks>pmap[page].clicks)
-          pmap[page]={query,clicks:row.clicks,impressions:row.impressions,ctr:(row.ctr*100).toFixed(1)+'%',pos:row.position.toFixed(1)};
-      });
-    }catch(e){console.warn('GSC sync error for',site.url,e);}
+    const r=await fetch('/api/gsc/query',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({siteUrl:site.url,startDate:start,endDate:end,dimensions:['page','query'],rowLimit:200})});
+    const d=await r.json();if(d.error)throw new Error('GSC: '+d.error);
+    (d.rows||[]).forEach(row=>{clicks+=row.clicks;impr+=row.impressions;posSum+=row.position;posN++;const[page,query]=row.keys;if(!pmap[page]||row.clicks>pmap[page].clicks)pmap[page]={query,clicks:row.clicks,impressions:row.impressions,ctr:(row.ctr*100).toFixed(1)+'%',pos:row.position.toFixed(1)};});
   }
-  const avgPos=posN?(posSum/posN).toFixed(1):'—';
-  const ctr=clicks&&impr?(clicks/impr*100).toFixed(1)+'%':'—';
-  setKPI('Impressions (GSC)',impr>9999?(impr/1000).toFixed(1)+'K':impr+'');
-  setKPI('Avg. Position',avgPos);
-  setKPI('Avg. CTR',ctr);
-  setKPI('Organic Traffic',clicks.toLocaleString());
-  refreshPivot(pmap);
+  const avgPos=posN?(posSum/posN).toFixed(1):'—';const ctr=clicks&&impr?(clicks/impr*100).toFixed(1)+'%':'—';
+  setKPI('Impressions (GSC)',impr>9999?(impr/1000).toFixed(1)+'K':impr+'');setKPI('Avg. Position',avgPos);setKPI('Avg. CTR',ctr);setKPI('Organic Traffic',clicks.toLocaleString());refreshPivot(pmap);
 }
 
-// GBP sync — FIXED: uses Business Profile Performance API
 async function syncGBP(){
-  const sel=CONN.google.gbp.filter(p=>p.selected);if(!sel.length)return;
-  const{start,end}=getDateRange();
-  const sd=new Date(start),ed=new Date(end);
-  let totalClicks=0,totalCalls=0,totalDirs=0,totalWA=0;
+  const sel=connectedProps.google.gbp.filter(p=>p.selected);if(!sel.length)return;
+  const{start,end}=getDateRange();const sd=new Date(start),ed=new Date(end);
+  let totalClicks=0,totalCalls=0,totalDirs=0;
   for(const loc of sel){
-    try{
-      // Extract location ID for Performance API
-      const locPath=loc.id.includes('locations/')?loc.id:'accounts/-/locations/'+loc.id;
-      const locForPerf='locations/'+loc.id.split('/').pop();
-      const url=`https://businessprofileperformance.googleapis.com/v1/${locForPerf}:fetchMultiDailyMetricsTimeSeries?`+
-        `dailyMetrics=WEBSITE_CLICKS&dailyMetrics=CALL_CLICKS&dailyMetrics=BUSINESS_DIRECTION_REQUESTS&`+
-        `dailyRange.startDate.year=${sd.getFullYear()}&dailyRange.startDate.month=${sd.getMonth()+1}&dailyRange.startDate.day=${sd.getDate()}&`+
-        `dailyRange.endDate.year=${ed.getFullYear()}&dailyRange.endDate.month=${ed.getMonth()+1}&dailyRange.endDate.day=${ed.getDate()}`;
-      const r=await fetch(url,{headers:{Authorization:'Bearer '+CONN.google.token}});
-      const d=await r.json();
-      (d.multiDailyMetricTimeSeries||[]).forEach(series=>{
-        (series.dailyMetricTimeSeries||[]).forEach(ts=>{
-          const total=(ts.timeSeries?.datedValues||[]).reduce((s,v)=>s+(Number(v.value)||0),0);
-          if(ts.dailyMetric==='WEBSITE_CLICKS') totalClicks+=total;
-          if(ts.dailyMetric==='CALL_CLICKS') totalCalls+=total;
-          if(ts.dailyMetric==='BUSINESS_DIRECTION_REQUESTS') totalDirs+=total;
-        });
-      });
-    }catch(e){console.warn('GBP performance sync error for',loc.id,e);}
+    const locationId=loc.id.split('/').pop();
+    const params=new URLSearchParams({locationId,'dailyMetrics':['WEBSITE_CLICKS','CALL_CLICKS','BUSINESS_DIRECTION_REQUESTS'],'dailyRange.startDate.year':sd.getFullYear(),'dailyRange.startDate.month':sd.getMonth()+1,'dailyRange.startDate.day':sd.getDate(),'dailyRange.endDate.year':ed.getFullYear(),'dailyRange.endDate.month':ed.getMonth()+1,'dailyRange.endDate.day':ed.getDate()});
+    const r=await fetch(`/api/gbp/performance?${params}`);const d=await r.json();
+    if(d.error){console.warn('GBP:',d.error);continue;}
+    (d.multiDailyMetricTimeSeries||[]).forEach(series=>{(series.dailyMetricTimeSeries||[]).forEach(ts=>{const total=(ts.timeSeries?.datedValues||[]).reduce((s,v)=>s+(Number(v.value)||0),0);if(ts.dailyMetric==='WEBSITE_CLICKS')totalClicks+=total;if(ts.dailyMetric==='CALL_CLICKS')totalCalls+=total;if(ts.dailyMetric==='BUSINESS_DIRECTION_REQUESTS')totalDirs+=total;});});
   }
-  setKPI('Website Clicks',totalClicks.toLocaleString());
-  setKPI('Calls',totalCalls.toLocaleString());
-  setKPI('Directions',totalDirs.toLocaleString());
-  setKPI('Profile Clicks',(totalClicks+totalCalls+totalDirs+totalWA).toLocaleString());
+  setKPI('Website Clicks',totalClicks.toLocaleString());setKPI('Calls',totalCalls.toLocaleString());setKPI('Directions',totalDirs.toLocaleString());setKPI('Profile Clicks',(totalClicks+totalCalls+totalDirs).toLocaleString());
 }
 
-// Meta Pages sync
 async function syncMeta(){
-  const sel=CONN.meta.pages.filter(p=>p.selected);if(!sel.length)return;
-  const{days}=getDateRange();
-  const since=Math.floor((Date.now()-days*864e5)/1000),until=Math.floor(Date.now()/1000);
+  const sel=connectedProps.meta.pages.filter(p=>p.selected);if(!sel.length)return;
+  const{days}=getDateRange();const since=Math.floor((Date.now()-days*864e5)/1000),until=Math.floor(Date.now()/1000);
   let fans=0,imp=0,reach=0;
   for(const page of sel){
-    try{
-      // FIXED: v19.0 → v21.0
-      const r=await fetch(`https://graph.facebook.com/v21.0/${page.id}/insights?metric=page_impressions,page_reach,page_fans&period=total_over_range&since=${since}&until=${until}&access_token=${page.token}`);
-      const d=await r.json();
-      (d.data||[]).forEach(item=>{
-        const v=item.values?.[0]?Number(item.values[0].value):0;
-        if(item.name==='page_impressions')imp+=v;
-        if(item.name==='page_reach')reach+=v;
-        if(item.name==='page_fans')fans+=v;
-      });
-    }catch(e){console.warn('Meta page sync error for',page.id,e);}
+    const params=new URLSearchParams({pageId:page.id,pageToken:page.token,metric:'page_impressions,page_reach,page_fans',period:'total_over_range',since,until});
+    const r=await fetch(`/api/meta/insights?${params}`);const d=await r.json();
+    if(d.error){console.warn('Meta:',d.error);continue;}
+    (d.data||[]).forEach(item=>{const v=item.values?.[0]?Number(item.values[0].value):0;if(item.name==='page_impressions')imp+=v;if(item.name==='page_reach')reach+=v;if(item.name==='page_fans')fans+=v;});
   }
-  setKPI('Total Followers',fans>999?(fans/1000).toFixed(1)+'K':fans+'');
-  setKPI('Impressions',imp>9999?(imp/1000).toFixed(1)+'K':imp+'');
-  setKPI('Total Reach',reach>9999?(reach/1000).toFixed(1)+'K':reach+'');
+  setKPI('Total Followers',fans>999?(fans/1000).toFixed(1)+'K':fans+'');setKPI('Impressions',imp>9999?(imp/1000).toFixed(1)+'K':imp+'');setKPI('Total Reach',reach>9999?(reach/1000).toFixed(1)+'K':reach+'');
 }
 
-// Instagram sync — NEW
 async function syncInstagram(){
-  const sel=CONN.meta.ig.filter(a=>a.selected);if(!sel.length)return;
-  const{days}=getDateRange();
-  const since=Math.floor((Date.now()-days*864e5)/1000),until=Math.floor(Date.now()/1000);
-  let totalFollowers=0,totalReach=0,totalImpr=0;
+  const sel=connectedProps.meta.ig.filter(a=>a.selected);if(!sel.length)return;
+  const{days}=getDateRange();const since=Math.floor((Date.now()-days*864e5)/1000),until=Math.floor(Date.now()/1000);
+  let totalFollowers=0;
   for(const acc of sel){
-    try{
-      const r=await fetch(`https://graph.facebook.com/v21.0/${acc.id}/insights?metric=reach,impressions,follower_count&period=day&since=${since}&until=${until}&access_token=${acc.pageToken}`);
-      const d=await r.json();
-      (d.data||[]).forEach(item=>{
-        if(item.name==='follower_count'&&item.values?.length){
-          totalFollowers+=Number(item.values[item.values.length-1].value)||0;
-        }else{
-          const tot=(item.values||[]).reduce((s,v)=>s+(Number(v.value)||0),0);
-          if(item.name==='reach')totalReach+=tot;
-          if(item.name==='impressions')totalImpr+=tot;
-        }
-      });
-    }catch(e){console.warn('Instagram sync error for',acc.id,e);}
+    const params=new URLSearchParams({igId:acc.id,pageToken:acc.pageToken,metric:'reach,impressions,follower_count',period:'day',since,until});
+    const r=await fetch(`/api/meta/instagram?${params}`);const d=await r.json();
+    if(d.error){console.warn('IG:',d.error);continue;}
+    (d.data||[]).forEach(item=>{if(item.name==='follower_count'&&item.values?.length)totalFollowers+=Number(item.values[item.values.length-1].value)||0;});
   }
   if(totalFollowers>0)setKPI('Total Followers',totalFollowers>999?(totalFollowers/1000).toFixed(1)+'K':totalFollowers+'');
 }
 
-// Meta Ads sync — NEW (requires Ad Account ID)
-async function syncMetaAds(){
-  const adAccountId=CONN.meta.adAccountId.replace('act_','');
-  if(!adAccountId||!CONN.meta.token)return;
+async function syncMetaAds(adAccountId){
+  const cleanId=adAccountId.replace('act_','');
   const{start,end}=getDateRange();
+  const params=new URLSearchParams({adAccountId:cleanId,fields:'spend,impressions,reach,clicks,actions','time_range[since]':start,'time_range[until]':end,level:'campaign',limit:20});
+  const r=await fetch(`/api/meta/ads?${params}`);const d=await r.json();
+  if(d.error){console.warn('Meta Ads:',d.error);return;}
+  let totalSpend=0,totalLeads=0;
+  (d.data||[]).forEach(camp=>{totalSpend+=parseFloat(camp.spend||0);(camp.actions||[]).forEach(action=>{if(['lead','offsite_conversion.fb_pixel_lead'].includes(action.action_type))totalLeads+=parseInt(action.value||0);});});
+  setKPI('Total Spend','$'+Math.round(totalSpend).toLocaleString());setKPI('Total Leads',totalLeads.toString());
+  if(totalLeads>0)setKPI('Avg. CPA','$'+(totalSpend/totalLeads).toFixed(2));
+  document.getElementById('adsLabel').style.display='none';
+}
+
+// ════════════════════════════════════════════
+//  AI — OpenRouter via backend SSE proxy
+// ════════════════════════════════════════════
+let aiHistory=[];
+
+function buildCTX(){
+  const kpis={};
+  document.querySelectorAll('.kcard').forEach(card=>{const lbl=card.querySelector('.kcard-lbl')?.textContent.trim();const val=card.querySelector('.kcard-val')?.textContent.trim();if(lbl&&val)kpis[lbl]=val;});
+  const isLive=connectedProps.google.connected||connectedProps.meta.connected;
+  return `You are a senior marketing analyst reviewing a ${isLive?'LIVE':'sample'} marketing dashboard.\nDATE RANGE: ${document.getElementById('rangeSelect')?.value||'Last 30 Days'}\nDATA: ${isLive?'Live API data':'Sample data'}\n\nCURRENT KPIs:\n${Object.entries(kpis).map(([k,v])=>`• ${k}: ${v}`).join('\n')}\n\nBe specific, concise, actionable. Use bullet points. Reference exact metrics.`;
+}
+
+function aiMsg(role,text){
+  const c=document.getElementById('aiMsgs');
+  const d=document.createElement('div');d.className='msg '+role;d.innerHTML=formatAI(text);c.appendChild(d);c.scrollTop=c.scrollHeight;return d;
+}
+
+async function aiSend(){
+  const inp=document.getElementById('aiIn');const btn=document.getElementById('aiBtn');
+  const txt=inp.value.trim();if(!txt)return;
+  aiHistory.push({role:'user',content:txt});aiMsg('usr',txt);inp.value='';btn.disabled=true;btn.textContent='…';
   try{
-    const r=await fetch(`https://graph.facebook.com/v21.0/act_${adAccountId}/insights?fields=spend,impressions,reach,clicks,actions&time_range[since]=${start}&time_range[until]=${end}&level=campaign&limit=20&access_token=${CONN.meta.token}`);
-    const d=await r.json();
-    if(d.error){console.warn('Meta Ads error:',d.error);return;}
-    let totalSpend=0,totalLeads=0,totalClicks=0,totalReach=0;
-    (d.data||[]).forEach(camp=>{
-      totalSpend+=parseFloat(camp.spend||0);
-      totalClicks+=parseInt(camp.clicks||0);
-      totalReach+=parseInt(camp.reach||0);
-      (camp.actions||[]).forEach(action=>{
-        if(['lead','offsite_conversion.fb_pixel_lead'].includes(action.action_type))totalLeads+=parseInt(action.value||0);
-      });
-    });
-    setKPI('Total Spend','$'+Math.round(totalSpend).toLocaleString());
-    setKPI('Total Leads',totalLeads.toString());
-    if(totalLeads>0)setKPI('Avg. CPA','$'+(totalSpend/totalLeads).toFixed(2));
-    document.getElementById('adsLabel').style.display='none';
-    showToast('Meta Ads data synced ✓','success');
-  }catch(e){console.warn('Meta Ads sync error:',e);}
+    const response=await fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:aiHistory.slice(-10),system:buildCTX()})});
+    if(!response.ok){const err=await response.json().catch(()=>({error:'Server error'}));throw new Error(err.error||'AI request failed');}
+    const reader=response.body.getReader();const decoder=new TextDecoder();
+    const c=document.getElementById('aiMsgs');
+    const msgEl=document.createElement('div');msgEl.className='msg ai';msgEl.innerHTML='<span class="cursor">▌</span>';c.appendChild(msgEl);c.scrollTop=c.scrollHeight;
+    let accumulated='',buffer='';
+    while(true){
+      const{done,value}=await reader.read();if(done)break;
+      buffer+=decoder.decode(value,{stream:true});const lines=buffer.split('\n');buffer=lines.pop()||'';      for(const line of lines){
+        if(!line.startsWith('data: '))continue;const data=line.slice(6).trim();if(data==='[DONE]')continue;
+        try{const parsed=JSON.parse(data);const token=parsed.choices?.[0]?.delta?.content;if(token){accumulated+=token;msgEl.innerHTML=formatAI(accumulated)+'<span class="cursor">▌</span>';c.scrollTop=c.scrollHeight;}}catch(e){}
+      }
+    }
+    msgEl.innerHTML=formatAI(accumulated);aiHistory.push({role:'assistant',content:accumulated});
+  }catch(e){aiMsg('ai','⚠️ **AI Error:** '+e.message);}
+  btn.disabled=false;btn.textContent='Send';
 }
 
-// ════════════════════════════════════════════
-//  CONFETTI
-// ════════════════════════════════════════════
-function launchConfetti(){
-  const canvas=document.getElementById('confettiCanvas');
-  const ctx=canvas.getContext('2d');
-  canvas.width=window.innerWidth;canvas.height=window.innerHeight;canvas.style.display='block';
-  const colors=['#B0D9BC','#EDD0A0','#E8AAAA','#C8D8EA','#C8AACC'];
-  const particles=Array.from({length:140},()=>({
-    x:Math.random()*canvas.width,y:-12,
-    vx:(Math.random()-.5)*5,vy:Math.random()*5+2,
-    color:colors[Math.floor(Math.random()*colors.length)],
-    size:Math.random()*9+4,
-    rotation:Math.random()*360,rotSpeed:(Math.random()-.5)*8
-  }));
-  let raf,start=null;
-  function draw(ts){
-    if(!start)start=ts;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    let alive=false;
-    particles.forEach(p=>{
-      p.x+=p.vx;p.y+=p.vy;p.vy+=0.12;p.rotation+=p.rotSpeed;
-      const opacity=Math.max(0,1-(ts-start)/3500);
-      if(p.y<canvas.height+20)alive=true;
-      ctx.save();ctx.globalAlpha=opacity;
-      ctx.translate(p.x,p.y);ctx.rotate(p.rotation*Math.PI/180);
-      ctx.fillStyle=p.color;
-      ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2);
-      ctx.restore();
-    });
-    if(alive&&ts-start<4000)raf=requestAnimationFrame(draw);
-    else{canvas.style.display='none';ctx.clearRect(0,0,canvas.width,canvas.height);}
-  }
-  if(raf)cancelAnimationFrame(raf);
-  requestAnimationFrame(draw);
+function initAI(){
+  document.getElementById('aiKeyStatus').textContent='OpenRouter';
+  document.getElementById('aiKeyStatus').className='ai-key-status connected';
+  document.getElementById('aiSetupNote').style.display='none';
+  aiMsg('ai','Hello! I've reviewed your marketing dashboard. Here's what stands out:\n\n**Organic:** Growing well (+8.2% traffic) but average position 14.3 leaves a big gap — pages in positions 11–20 with high impressions are your #1 SEO lever.\n\n**Paid:** ROAS 4.2× is solid. Competitor Terms at $34.44 CPA vs Brand Search at $20.00 — 72% gap worth reviewing.\n\n**GBP:** WhatsApp chats up 24.3% signals high purchase intent.\n\n**Social:** Leads growing fast (+31.7%) but 54 leads vs 24.3K followers is low.\n\nConnect your accounts and run Sync All — then ask me anything.');
 }
 
-// ════════════════════════════════════════════
-//  COPY KPI ON CLICK
-// ════════════════════════════════════════════
-function addCopyHandlers(){
-  document.querySelectorAll('.kcard-val').forEach(el=>{
-    el.addEventListener('click',()=>{
-      const val=el.textContent.replace('⎘','').trim();
-      navigator.clipboard.writeText(val).then(()=>{
-        showToast(`Copied: ${val}`,'success',2000);
-      }).catch(()=>{
-        showToast(`Value: ${val}`,'info',2000);
-      });
-    });
-  });
+async function replyReview(reviewId,btn){
+  const inp=document.getElementById('ri_'+reviewId);const text=inp?.value.trim();
+  if(!text){showToast('Write a reply first','error');return;}
+  if(!connectedProps.google.connected){showToast('Sign in with Google to send GBP replies','error');return;}
+  const loc=connectedProps.google.gbp.find(l=>l.selected);
+  if(!loc){showToast('No GBP location selected','error');return;}
+  btn.disabled=true;btn.textContent='Sending…';
+  try{
+    const r=await fetch(`/api/gbp/reviews/${reviewId}/reply`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({locationPath:loc.id,comment:text})});
+    if(r.ok){showToast('Reply posted ✓','success');inp.value='';btn.textContent='Replied ✓';}
+    else{const e=await r.json();throw new Error(e.error);}
+  }catch(e){showToast('Reply error: '+e.message,'error',5000);btn.disabled=false;btn.textContent='Reply via GBP';}
 }
 
-// ════════════════════════════════════════════
-//  AUTO REFRESH
-// ════════════════════════════════════════════
-let refreshTimer=null;
-function onRefreshChange(){
-  if(refreshTimer)clearInterval(refreshTimer);
-  const mins=parseInt(document.getElementById('refreshSelect').value);
-  if(!mins)return;
-  refreshTimer=setInterval(()=>{
-    const gOn=CONN.google.token&&Date.now()<CONN.google.expiry;
-    if(gOn||CONN.meta.token)syncAll();
-  },mins*60000);
-  showToast(`Auto-refresh every ${mins} min enabled`,'info',2500);
-}
-
-// ════════════════════════════════════════════
-//  LIVE CLOCK
-// ════════════════════════════════════════════
-function startClock(){
-  const el=document.getElementById('liveClock');
-  const tick=()=>{el.textContent=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});};
-  tick();setInterval(tick,1000);
-}
-
-// ════════════════════════════════════════════
-//  KEYBOARD SHORTCUTS
-// ════════════════════════════════════════════
-document.addEventListener('keydown',e=>{
-  const tag=document.activeElement.tagName;
-  if(tag==='INPUT'||tag==='TEXTAREA')return;
-  if(e.key>='1'&&e.key<='6'){
-    const btns=document.querySelectorAll('.tbtn');
-    const idx=parseInt(e.key)-1;
-    if(btns[idx])btns[idx].click();
-  }
-  if(e.key==='c'||e.key==='C'){toggleConn(true);}
-  if(e.key==='Escape'){toggleConn(false);}
-  if(e.key==='/'){ e.preventDefault();document.getElementById('aiIn')?.focus(); }
-  if((e.ctrlKey||e.metaKey)&&e.key==='r'){e.preventDefault();syncAll();}
-});
 
 // ════════════════════════════════════════════
 //  BOOT
 // ════════════════════════════════════════════
-loadConn();
 pop();
 initChartsOV();
 initAI();
 addCopyHandlers();
 startClock();
 updatePeriodBadge();
+initConnection(); // check /auth/status + load properties from backend
 </script>
 </body>
 </html>

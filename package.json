@@ -1,0 +1,22 @@
+{
+  "name": "marketing-intelligence-dashboard",
+  "version": "2.0.0",
+  "description": "Full-stack marketing dashboard — GA4, GSC, GBP, Meta, AI via OpenRouter",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
