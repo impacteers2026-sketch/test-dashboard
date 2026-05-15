@@ -9,6 +9,13 @@ const axios    = require('axios');
 const path     = require('path');
 
 const app = express();
+
+// ── TRUST PROXY — required for Render, Railway, Heroku, etc. ─────────────
+// Render sits behind a reverse proxy. Without this flag Express sees every
+// request as HTTP (req.secure = false), so secure cookies are never sent
+// back to the browser, breaking sessions after the OAuth redirect.
+app.set('trust proxy', 1);
+
 app.use(express.json({ limit: '2mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -30,10 +37,12 @@ app.use(session({
   resave : false,
   saveUninitialized: false,
   cookie : {
-    secure  : process.env.NODE_ENV === 'production', 
+    // On Render NODE_ENV should be 'production' — always use secure cookies
+    // trust proxy (above) ensures req.secure is true even behind Render's proxy
+    secure  : process.env.NODE_ENV === 'production',
     httpOnly: true,
     sameSite: 'lax',
-    maxAge  : 24 * 60 * 60 * 1000 
+    maxAge  : 24 * 60 * 60 * 1000
   }
 }));
 
@@ -255,7 +264,9 @@ app.get('/api/properties', async (req, res) => {
           } catch (e) { console.warn('GBP locations error:', e.message); }
         }
       }
-    } catch (e) { console.error('Google properties error:', e.message); }
+    } catch (e) {
+      console.error('Google properties error:', e.response?.data || e.message);
+    }
   }
 
   // ── META ──
@@ -320,7 +331,10 @@ app.post('/api/ga4/report/:propertyId', async (req, res) => {
       { headers: { Authorization: `Bearer ${token}` } }
     );
     res.json(data);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) {
+    console.error('GA4 report error:', e.response?.data || e.message);
+    res.status(500).json({ error: e.response?.data?.error?.message || e.message });
+  }
 });
 
 
@@ -348,7 +362,10 @@ app.post('/api/gsc/query', async (req, res) => {
       { headers: { Authorization: `Bearer ${token}` } }
     );
     res.json(data);
-  } catch (e) { res.status(500).json({ error: e.message }); }
+  } catch (e) {
+    console.error('GSC query error:', e.response?.data || e.message);
+    res.status(500).json({ error: e.response?.data?.error?.message || e.message });
+  }
 });
 
 
@@ -488,7 +505,7 @@ app.post('/api/ai/chat', aiRateLimit, async (req, res) => {
     const response = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
-        model   : process.env.OPENROUTER_MODEL || 'anthropic/claude-sonnet-4',
+        model   : process.env.OPENROUTER_MODEL || 'anthropic/claude-sonnet-4-5',
         messages: req.body.messages,
         system  : req.body.system,
         stream  : true,
