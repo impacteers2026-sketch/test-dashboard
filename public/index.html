@@ -316,6 +316,59 @@ tr:hover td{background:var(--s2);}
 .gads-steps{list-style:none;counter-reset:step;margin-top:8px;}
 .gads-steps li{counter-increment:step;display:flex;gap:8px;font-size:10px;color:var(--sub);margin-bottom:5px;line-height:1.5;}
 .gads-steps li::before{content:counter(step);width:16px;height:16px;border-radius:3px;background:var(--s2);color:var(--text);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ════ SEO FILTER BAR ════ */
+.seo-filter-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:12px 16px;background:var(--s1);border:1px solid var(--b1);border-radius:10px;margin-bottom:16px;}
+.sfb-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.sfb-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--sub);white-space:nowrap;}
+.sfb-pills{display:flex;gap:4px;flex-wrap:wrap;}
+.fpill{padding:4px 12px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;background:var(--s2);border:1px solid var(--b2);color:var(--sub);transition:all .18s;white-space:nowrap;}
+.fpill.on{background:var(--gd);border-color:rgba(176,217,188,.4);color:var(--green);}
+.fpill-brand.on{background:var(--od);border-color:rgba(237,208,160,.4);color:var(--orange);}
+.fpill-nb.on{background:rgba(100,160,255,.12);border-color:rgba(100,160,255,.3);color:#88aaee;}
+.fpill-active{background:var(--gb);border-color:rgba(176,217,188,.3);color:var(--green);}
+.fpill:hover:not(.on){color:var(--text);}
+.sfb-sep{width:1px;height:20px;background:var(--b2);flex-shrink:0;}
+.sfb-clear{background:none;border:1px solid var(--rb);color:var(--red);border-radius:20px;font-size:9px;font-weight:600;cursor:pointer;padding:3px 10px;font-family:'Poppins',sans-serif;transition:opacity .15s;}
+.sfb-clear:hover{opacity:.7;}
+.sfb-summary{font-size:10px;color:var(--sub);margin-left:auto;}
+
+/* ════ BRAND SPLIT ROW ════ */
+.brand-split-row{display:flex;align-items:center;gap:0;background:var(--s2);border:1px solid var(--b2);border-radius:8px;overflow:hidden;margin-top:4px;}
+.brand-split-item{flex:1;padding:10px 14px;display:flex;flex-direction:column;gap:3px;}
+.brand-split-sep{width:1px;background:var(--b2);align-self:stretch;}
+.bsi-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.brand-dot{background:var(--orange);}
+.nb-dot{background:#88aaee;}
+.bsi-lbl{font-size:9px;color:var(--sub);font-weight:500;}
+.bsi-val{font-size:20px;font-weight:700;letter-spacing:-.5px;}
+.bsi-pct{font-size:9px;color:var(--sub);}
+
+/* ════ COLLAPSIBLE KW SECTIONS ════ */
+.kw-section{margin-bottom:8px;border:1px solid var(--b2);border-radius:8px;overflow:hidden;}
+.kw-sect-hd{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;background:var(--s2);transition:background .15s;user-select:none;}
+.kw-sect-hd:hover{background:var(--s3);}
+.kw-sect-name{font-size:11px;font-weight:600;flex:1;}
+.kw-sect-meta{font-size:10px;color:var(--sub);}
+.kw-sect-chevron{font-size:10px;color:var(--sub);transition:transform .2s;flex-shrink:0;}
+.kw-sect-hd.open .kw-sect-chevron{transform:rotate(180deg);}
+.kw-sect-body{display:none;overflow:auto;max-height:420px;}
+.kw-sect-body.open{display:block;}
+.kw-sect-body::-webkit-scrollbar{width:3px;height:3px;}
+.kw-sect-body::-webkit-scrollbar-thumb{background:var(--b2);}
+
+/* ════ SHOW MORE / LESS ════ */
+.show-more-wrap{text-align:center;padding:8px 0 4px;}
+.show-more-btn{background:none;border:1px solid var(--b2);color:var(--sub);font-size:10px;font-weight:500;padding:4px 16px;border-radius:20px;cursor:pointer;font-family:'Poppins',sans-serif;transition:all .18s;}
+.show-more-btn:hover{color:var(--text);border-color:var(--muted);}
+
+/* ════ BRAND TYPE BADGES ════ */
+.brand-tag{font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px;background:var(--od);color:var(--orange);white-space:nowrap;}
+.nb-tag{font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px;background:rgba(100,160,255,.12);color:#88aaee;white-space:nowrap;}
+
+/* ════ NON-MATCH SECTION ════ */
+.nonmatch-hd{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.nonmatch-toggle{font-size:9px;background:var(--s3);border:1px solid var(--b2);color:var(--sub);border-radius:4px;padding:2px 8px;cursor:pointer;font-family:'Poppins',sans-serif;}
 </style>
 </head>
 <body>
@@ -425,40 +478,98 @@ tr:hover td{background:var(--s2);}
 <!-- ══════════ SEO ══════════ -->
 <div id="t-seo" class="main">
 
-  <!-- Domain filter -->
-  <div class="domain-tabs" id="domainTabs">
-    <button class="dtab on" onclick="setSeoDomain('all',this)">All Properties</button>
-    <!-- Populated dynamically after GSC sync -->
+  <!-- ── FILTER BAR ─────────────────────────────────────── -->
+  <div class="seo-filter-bar" id="seoFilterBar">
+    <div class="sfb-group">
+      <span class="sfb-label">Property</span>
+      <div class="sfb-pills" id="domainTabs">
+        <button class="fpill on" onclick="setFilter('domain','all',this)">All</button>
+      </div>
+    </div>
+    <div class="sfb-sep"></div>
+    <div class="sfb-group">
+      <span class="sfb-label">Query Type</span>
+      <div class="sfb-pills" id="brandPills">
+        <button class="fpill on" onclick="setFilter('brand','all',this)">All Queries</button>
+        <button class="fpill fpill-nb" onclick="setFilter('brand','non-brand',this)">Non-Brand</button>
+        <button class="fpill fpill-brand" onclick="setFilter('brand','brand',this)">Brand</button>
+      </div>
+    </div>
+    <div class="sfb-sep"></div>
+    <div class="sfb-group" id="vertChipGroup" style="display:none">
+      <span class="sfb-label">Vertical</span>
+      <button class="fpill fpill-active" id="vertChip" onclick="clearVertFilter()">— ×</button>
+    </div>
+    <button class="sfb-clear" id="clearAllFiltersBtn" onclick="clearAllSeoFilters()" style="display:none">✕ Clear All</button>
+    <span class="sfb-summary" id="filterSummary"></span>
   </div>
 
-  <!-- Aggregate KPIs -->
+  <!-- ── KPIs ────────────────────────────────────────────── -->
   <div class="kpi-row">
-    <div class="kpi-lbl">
-      Organic Performance
-      <span id="seoKpiDomainLabel" style="font-size:9px;color:var(--sub);font-weight:400;text-transform:none;letter-spacing:0"></span>
-    </div>
-    <div class="kpi-g cols-5">
-      <div class="kcard"><div class="kcard-lbl">Organic Clicks</div><div class="kcard-val" id="kSeoClicks">—</div><div class="kcard-chg nt">—</div></div>
+    <div class="kpi-lbl">Organic Performance <span id="seoKpiDomainLabel" style="font-size:9px;color:var(--sub);font-weight:400;text-transform:none;letter-spacing:0"></span></div>
+    <div class="kpi-g cols-5" style="margin-bottom:10px">
+      <div class="kcard"><div class="kcard-lbl">Organic Traffic</div><div class="kcard-val" id="kSeoClicks">—</div><div class="kcard-chg nt">—</div></div>
       <div class="kcard"><div class="kcard-lbl">Impressions</div><div class="kcard-val" id="kSeoImpr">—</div><div class="kcard-chg nt">—</div></div>
       <div class="kcard"><div class="kcard-lbl">Avg. Position</div><div class="kcard-val" id="kSeoPos">—</div><div class="kcard-chg nt">—</div></div>
       <div class="kcard"><div class="kcard-lbl">Avg. CTR</div><div class="kcard-val" id="kSeoCTR">—</div><div class="kcard-chg nt">—</div></div>
       <div class="kcard"><div class="kcard-lbl">GA4 Key Events</div><div class="kcard-val" id="kSeoLeads">—</div><div class="kcard-chg nt" style="font-size:9px;color:var(--sub)">form_submit · generate_lead</div></div>
     </div>
+    <!-- Brand / Non-Brand split bar -->
+    <div class="brand-split-row" id="brandSplitRow">
+      <div class="brand-split-item">
+        <span class="bsi-lbl">🏷 Brand Traffic</span>
+        <span class="bsi-val" id="kBrandTraffic">—</span>
+        <span class="bsi-pct" id="kBrandPct">— of total</span>
+      </div>
+      <div class="brand-split-sep"></div>
+      <div class="brand-split-item">
+        <span class="bsi-lbl">Brand Avg. Position</span>
+        <span class="bsi-val" id="kBrandPos">—</span>
+        <span class="bsi-pct" id="kBrandCTR">— CTR</span>
+      </div>
+      <div class="brand-split-sep"></div>
+      <div class="brand-split-item">
+        <span class="bsi-lbl">🎯 Non-Brand Traffic</span>
+        <span class="bsi-val" id="kNBTraffic">—</span>
+        <span class="bsi-pct" id="kNBPct">— of total</span>
+      </div>
+      <div class="brand-split-sep"></div>
+      <div class="brand-split-item">
+        <span class="bsi-lbl">Non-Brand Avg. Position</span>
+        <span class="bsi-val" id="kNBPos">—</span>
+        <span class="bsi-pct" id="kNBCTR">— CTR</span>
+      </div>
+    </div>
   </div>
 
-  <!-- Vertical breakdown grid -->
+  <!-- ── VERTICAL BREAKDOWN ───────────────────────────────── -->
   <div class="panel" style="margin-bottom:14px">
     <div class="ph">
       <span class="pt">Vertical Breakdown</span>
-      <span class="ps">Segmented by URL pattern · click to drill down</span>
-      <span class="ph-right" style="font-size:10px;color:var(--sub)" id="vertFilterLabel"></span>
+      <span class="ps">Click a card to drill all sections · click again to clear</span>
+      <span style="margin-left:auto;font-size:10px;color:var(--sub)" id="vertFilterLabel"></span>
     </div>
     <div class="vert-grid" id="vertGrid">
-      <div style="grid-column:1/-1;text-align:center;color:var(--sub);font-size:10px;padding:18px">Connect GSC then Sync to load vertical breakdown</div>
+      <div style="grid-column:1/-1;text-align:center;color:var(--sub);font-size:10px;padding:18px">Connect GSC then Sync to load</div>
     </div>
   </div>
 
-  <!-- Blog Performance (always its own section) -->
+  <!-- ── UNCATEGORIZED PAGES ──────────────────────────────── -->
+  <div class="panel" id="nonMatchPanel" style="margin-bottom:14px;display:none">
+    <div class="ph nonmatch-hd" onclick="toggleSection('nonMatchBody','nonMatchChevron')">
+      <span class="pt" style="color:var(--sub)">Uncategorized Pages</span>
+      <span class="ps">URLs that didn't match any vertical pattern</span>
+      <span id="nonMatchChevron" class="kw-sect-chevron" style="margin-left:auto">▼</span>
+    </div>
+    <div id="nonMatchBody" style="display:none">
+      <table id="tNonMatch">
+        <thead><tr><th>URL</th><th>Property</th><th class="nr">Traffic</th><th class="nr">Impr.</th><th class="nr">CTR</th><th class="nr">Pos.</th><th>Top Query</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── BLOG PERFORMANCE ─────────────────────────────────── -->
   <div class="panel" style="margin-bottom:14px">
     <div class="ph">
       <span class="pt">Blog Performance</span>
@@ -468,49 +579,73 @@ tr:hover td{background:var(--s2);}
       </select>
     </div>
     <table id="tBlog">
-      <thead><tr><th>Blog Post URL</th><th>Property</th><th class="nr">Clicks</th><th class="nr">Impr.</th><th class="nr">CTR</th><th class="nr">Position</th><th>Top Query</th></tr></thead>
+      <thead><tr><th>Blog Post</th><th>Property</th><th class="nr">Traffic</th><th class="nr">Impr.</th><th class="nr">CTR</th><th class="nr">Pos.</th><th>Top Query</th></tr></thead>
       <tbody></tbody>
     </table>
+    <div class="show-more-wrap" id="blogMoreWrap" style="display:none">
+      <button class="show-more-btn" id="blogMoreBtn" onclick="tableShowMore('tBlog','blogMoreBtn',20)">Show more ↓</button>
+    </div>
   </div>
 
-  <!-- Keyword × Page matrix, grouped by vertical -->
+  <!-- ── KEYWORDS × PAGES — collapsible per vertical ─────── -->
   <div class="panel" style="margin-bottom:14px">
-    <div class="ph">
+    <div class="ph" style="flex-wrap:wrap;gap:8px">
       <span class="pt">Keywords × Pages</span>
-      <span class="ps">Every query mapped to its landing page — grouped by vertical</span>
-      <select id="kwVertFilter" style="font-size:10px;margin-left:auto" onchange="renderKWMatrix()">
-        <option value="all">All Verticals</option>
-      </select>
+      <span class="ps">Every query → page → vertical</span>
+      <div style="margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <select id="kwVertFilter" style="font-size:10px" onchange="renderKWMatrix()"><option value="all">All Verticals</option></select>
+        <select id="kwBrandFilter" style="font-size:10px" onchange="renderKWMatrix()">
+          <option value="all">All Queries</option>
+          <option value="non-brand">Non-Brand Only</option>
+          <option value="brand">Brand Only</option>
+        </select>
+        <button class="cbtn ghost sm" onclick="kwExpandAll(true)">Expand All</button>
+        <button class="cbtn ghost sm" onclick="kwExpandAll(false)">Collapse All</button>
+      </div>
     </div>
-    <table id="tKWMatrix">
-      <thead><tr><th>Vertical</th><th>Landing Page</th><th>Query</th><th class="nr">Clicks</th><th class="nr">Impr.</th><th class="nr">CTR</th><th class="nr">Pos.</th></tr></thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-  <!-- Top pages + Top queries (now filtered by active domain) -->
-  <div class="row c2">
-    <div class="panel">
-      <div class="ph"><span class="pt">Top Pages by Clicks</span><span class="ps">Top 3 / 10 / 20 Tiers</span></div>
-      <table id="tPages"><thead><tr><th>Landing Page</th><th class="nr">Clicks</th><th class="nr">Tier</th><th class="nr">CTR</th></tr></thead><tbody></tbody></table>
-    </div>
-    <div class="panel">
-      <div class="ph"><span class="pt">Top Queries by Clicks</span><span class="ps">Top 3 / 10 / 20 Tiers</span></div>
-      <table id="tQueries"><thead><tr><th>Query</th><th class="nr">Clicks</th><th class="nr">Pos.</th><th class="nr">Tier</th></tr></thead><tbody></tbody></table>
-    </div>
-  </div>
-  <div class="row c2">
-    <div class="panel">
-      <div class="ph"><span class="pt">Best Ranking Pages</span><span class="ps">Lowest avg. position, ≥10 impressions</span></div>
-      <table id="tRankPages"><thead><tr><th>Page</th><th class="nr">Pos.</th><th class="nr">Impr.</th><th class="nr">CTR</th></tr></thead><tbody></tbody></table>
-    </div>
-    <div class="panel">
-      <div class="ph"><span class="pt">Best Ranking Queries</span><span class="ps">Lowest avg. position, ≥10 impressions</span></div>
-      <table id="tRankQ"><thead><tr><th>Query</th><th class="nr">Pos.</th><th class="nr">Impr.</th><th class="nr">CTR</th></tr></thead><tbody></tbody></table>
+    <div id="kwSections">
+      <div style="text-align:center;color:var(--sub);font-size:10px;padding:18px">Connect GSC then Sync to load</div>
     </div>
   </div>
 
-  <!-- Hidden pivot (still used by AI context builder) -->
+  <!-- ── TOP PAGES + TOP QUERIES ─────────────────────────── -->
+  <div class="row c2">
+    <div class="panel">
+      <div class="ph">
+        <span class="pt">Top Pages by Traffic</span>
+        <select id="topPagesLimit" style="font-size:10px;margin-left:auto" onchange="renderTopPages()">
+          <option value="20">Top 20</option><option value="50">Top 50</option><option value="0">All</option>
+        </select>
+      </div>
+      <table id="tPages">
+        <thead><tr><th>Landing Page</th><th>Vertical</th><th class="nr">Traffic</th><th class="nr">Tier</th><th class="nr">CTR</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="panel">
+      <div class="ph">
+        <span class="pt">Top Queries by Traffic</span>
+        <select id="topQueriesLimit" style="font-size:10px;margin-left:auto" onchange="renderTopQueries()">
+          <option value="20">Top 20</option><option value="50">Top 50</option><option value="0">All</option>
+        </select>
+      </div>
+      <table id="tQueries">
+        <thead><tr><th>Query</th><th>Type</th><th class="nr">Traffic</th><th class="nr">Pos.</th><th class="nr">Tier</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row c2">
+    <div class="panel">
+      <div class="ph"><span class="pt">Best Ranking Pages</span><span class="ps">≥10 impressions</span></div>
+      <table id="tRankPages"><thead><tr><th>Page</th><th>Vertical</th><th class="nr">Pos.</th><th class="nr">Impr.</th><th class="nr">CTR</th></tr></thead><tbody></tbody></table>
+    </div>
+    <div class="panel">
+      <div class="ph"><span class="pt">Best Ranking Queries</span><span class="ps">≥10 impressions</span></div>
+      <table id="tRankQ"><thead><tr><th>Query</th><th>Type</th><th class="nr">Pos.</th><th class="nr">Impr.</th><th class="nr">CTR</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
+
   <table id="tPivot" style="display:none"><thead><tr></tr></thead><tbody></tbody></table>
 </div>
 
@@ -651,7 +786,7 @@ tr:hover td{background:var(--s2);}
 <div id="t-seg" class="main">
   <div style="margin-bottom:16px">
     <div style="font-size:13px;font-weight:600;margin-bottom:4px">Performance Segmentation Matrix</div>
-    <div style="font-size:10px;color:var(--sub)">Auto-classified by CTR, Position, Impressions and Conversion Rate · Last 30 Days</div>
+    <div id="segSubtitle" style="font-size:10px;color:var(--sub)">Auto-classified by CTR, Position, Impressions · Sync GSC to populate</div>
   </div>
   <div class="seg-g">
     <div class="seg seg-wins">
@@ -1302,7 +1437,14 @@ async function syncAll(){
   if(btn){btn.disabled=false;btn.textContent='Sync All Selected';}
   if(statusEl){statusEl.style.color=errs.length?'var(--red)':'var(--green)';statusEl.textContent=errs.length?`${errs.length} source(s) had errors`:'✓ Dashboard updated';}
   if(errs.length){showToast(`Sync completed with ${errs.length} error(s)`,'error');errs.forEach(e=>console.warn('Sync error:',e.reason));}
-  else{showToast('All data synced ✓','success');launchConfetti();const now=new Date();document.getElementById('lastSyncLabel').innerHTML=`Last synced <span>${now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</span>`;}
+  else{
+    showToast('All data synced ✓','success');
+    launchConfetti();
+    const now=new Date();
+    document.getElementById('lastSyncLabel').innerHTML=`Last synced <span>${now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</span>`;
+    // Trigger AI auto-analysis with live data
+    postSyncAI();
+  }
   updateTrigger();
 }
 
@@ -1312,6 +1454,226 @@ async function syncAll(){
 let _seoData = {};     // { domain → { clicks, impr, posSum, posN, rows[] } }
 let _seoDomain = 'all'; // current domain filter in SEO tab
 let _vertCharts = {};   // Chart instances keyed by verticalName
+
+// ════════════════════════════════════════════
+//  BRAND DETECTION
+// ════════════════════════════════════════════
+const BRAND_TERMS = [
+  'impacteers','futurejobs','future jobs','examprep','exam prep',
+  'tisteps','ti steps','recruitment.impacteers'
+];
+function isBrand(query) {
+  const q = (query || '').toLowerCase();
+  return BRAND_TERMS.some(t => q.includes(t));
+}
+function brandTag(query) {
+  return isBrand(query)
+    ? '<span class="brand-tag">Brand</span>'
+    : '<span class="nb-tag">Non-Brand</span>';
+}
+
+// ════════════════════════════════════════════
+//  UNIFIED FILTER STATE
+// ════════════════════════════════════════════
+let _filters = { domain: 'all', brand: 'all', vertical: 'all' };
+
+function setFilter(key, value, btn) {
+  _filters[key] = value;
+
+  // Update pill active states for the group
+  if (btn) {
+    const group = btn.closest('.sfb-pills') || btn.closest('.sfb-group');
+    if (group) group.querySelectorAll('.fpill').forEach(p => p.classList.remove('on'));
+    btn.classList.add('on');
+  }
+
+  // Sync KW panel dropdowns with global brand filter
+  if (key === 'brand') {
+    const kwb = document.getElementById('kwBrandFilter');
+    if (kwb) kwb.value = value;
+  }
+
+  _updateFilterUI();
+  const rows = buildFilteredRows();
+  _updateKPIs(rows);
+  renderSEOTab(rows);
+}
+
+function setSeoDomain(domain, btn) { setFilter('domain', domain, btn); }
+
+function clearVertFilter() {
+  _filters.vertical = 'all';
+  document.querySelectorAll('.vert-card').forEach(c => c.classList.remove('sel'));
+  document.getElementById('vertChipGroup').style.display = 'none';
+  document.getElementById('vertFilterLabel').textContent = '';
+  _updateFilterUI();
+  const rows = buildFilteredRows();
+  _updateKPIs(rows);
+  renderSEOTab(rows);
+}
+
+function clearAllSeoFilters() {
+  _filters = { domain: 'all', brand: 'all', vertical: 'all' };
+  // Reset pill UI
+  document.querySelectorAll('#domainTabs .fpill').forEach((p,i) => p.classList.toggle('on', i === 0));
+  document.querySelectorAll('#brandPills .fpill').forEach((p,i) => p.classList.toggle('on', i === 0));
+  document.querySelectorAll('.vert-card').forEach(c => c.classList.remove('sel'));
+  document.getElementById('vertChipGroup').style.display = 'none';
+  document.getElementById('vertFilterLabel').textContent = '';
+  const kwb = document.getElementById('kwBrandFilter');
+  if (kwb) kwb.value = 'all';
+  const kwv = document.getElementById('kwVertFilter');
+  if (kwv) kwv.value = 'all';
+  _updateFilterUI();
+  const rows = buildFilteredRows();
+  _updateKPIs(rows);
+  renderSEOTab(rows);
+}
+
+function _updateFilterUI() {
+  const active = Object.entries(_filters).filter(([, v]) => v !== 'all').length;
+  const clearBtn = document.getElementById('clearAllFiltersBtn');
+  if (clearBtn) clearBtn.style.display = active > 0 ? '' : 'none';
+  const summary = document.getElementById('filterSummary');
+  if (summary) {
+    const rows = buildFilteredRows();
+    summary.textContent = rows.length ? `${rows.length.toLocaleString()} rows matching` : '';
+  }
+}
+
+// ════════════════════════════════════════════
+//  FILTERED ROW BUILDER
+// ════════════════════════════════════════════
+function buildFilteredRows() {
+  let rows = [];
+  if (_filters.domain === 'all') {
+    Object.values(_seoData).forEach(d => rows.push(...d.rows));
+  } else {
+    rows = (_seoData[_filters.domain] || { rows: [] }).rows;
+  }
+  if (_filters.brand !== 'all') {
+    const wantBrand = _filters.brand === 'brand';
+    rows = rows.filter(r => isBrand(r.query) === wantBrand);
+  }
+  if (_filters.vertical !== 'all') {
+    rows = rows.filter(r => getVertical(r.url, r.domain) === _filters.vertical);
+  }
+  return rows;
+}
+
+// ── KPI updater ────────────────────────────────────────────────────────────
+function _updateKPIs(rows) {
+  let c = 0, im = 0, ps = 0, pn = 0;
+  rows.forEach(r => { c += r.clicks; im += r.impressions; ps += r.pos; pn++; });
+  const kc = document.getElementById('kSeoClicks'); if (kc) animateKPI(kc, c.toLocaleString());
+  const ki = document.getElementById('kSeoImpr');   if (ki) ki.textContent = fmtK(im);
+  const kp = document.getElementById('kSeoPos');    if (kp) kp.textContent = pn ? (ps/pn).toFixed(1) : '—';
+  const kt = document.getElementById('kSeoCTR');    if (kt) kt.textContent = c&&im ? (c/im*100).toFixed(1)+'%' : '—';
+  const lbl = document.getElementById('seoKpiDomainLabel');
+  if (lbl) {
+    const parts = [];
+    if (_filters.domain !== 'all') parts.push(_filters.domain);
+    if (_filters.brand !== 'all') parts.push(_filters.brand === 'brand' ? 'Brand queries' : 'Non-Brand queries');
+    if (_filters.vertical !== 'all') parts.push(_filters.vertical);
+    lbl.textContent = parts.length ? '· ' + parts.join(' · ') : '· All Properties';
+  }
+  _updateBrandSplit(rows);
+}
+
+function _updateBrandSplit(rows) {
+  // Split rows regardless of brand filter (always show full picture)
+  const allForSplit = buildFilteredRowsForSplit();
+  let bc=0,bps=0,bpn=0,bim=0;
+  let nc=0,nps=0,npn=0,nim=0;
+  allForSplit.forEach(r=>{
+    if(isBrand(r.query)){bc+=r.clicks;bps+=r.pos;bpn++;bim+=r.impressions;}
+    else{nc+=r.clicks;nps+=r.pos;npn++;nim+=r.impressions;}
+  });
+  const total=(bc+nc)||1;
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('kBrandTraffic',  bc.toLocaleString());
+  set('kBrandPct',      ((bc/total)*100).toFixed(1)+'% of traffic');
+  set('kBrandPos',      bpn?(bps/bpn).toFixed(1):'—');
+  set('kBrandCTR',      bc&&bim?(bc/bim*100).toFixed(1)+'% CTR':'—');
+  set('kNBTraffic',     nc.toLocaleString());
+  set('kNBPct',         ((nc/total)*100).toFixed(1)+'% of traffic');
+  set('kNBPos',         npn?(nps/npn).toFixed(1):'—');
+  set('kNBCTR',         nc&&nim?(nc/nim*100).toFixed(1)+'% CTR':'—');
+}
+
+// Brand split always uses domain+vertical filters but ignores brand filter
+function buildFilteredRowsForSplit(){
+  let rows=[];
+  if(_filters.domain==='all'){Object.values(_seoData).forEach(d=>rows.push(...d.rows));}
+  else{rows=(_seoData[_filters.domain]||{rows:[]}).rows;}
+  if(_filters.vertical!=='all') rows=rows.filter(r=>getVertical(r.url,r.domain)===_filters.vertical);
+  return rows;
+}
+
+// ════════════════════════════════════════════
+//  VERTICAL CARD CLICK → FILTER
+// ════════════════════════════════════════════
+function filterByVertical(name, card) {
+  const wasSelected = card.classList.contains('sel');
+  document.querySelectorAll('.vert-card').forEach(c => c.classList.remove('sel'));
+  if (wasSelected) {
+    _filters.vertical = 'all';
+    document.getElementById('vertChipGroup').style.display = 'none';
+    document.getElementById('vertFilterLabel').textContent = '';
+  } else {
+    _filters.vertical = name;
+    card.classList.add('sel');
+    const chip = document.getElementById('vertChip');
+    if (chip) chip.textContent = name + ' ×';
+    document.getElementById('vertChipGroup').style.display = '';
+    document.getElementById('vertFilterLabel').textContent = 'Showing: ' + name;
+    // Sync KW dropdown
+    const kwv = document.getElementById('kwVertFilter');
+    if (kwv) kwv.value = name;
+  }
+  _updateFilterUI();
+  const rows = buildFilteredRows();
+  _updateKPIs(rows);
+  renderSEOTab(rows);
+}
+
+// ════════════════════════════════════════════
+//  SECTION COLLAPSE TOGGLE (reusable)
+// ════════════════════════════════════════════
+function toggleSection(bodyId, chevronId) {
+  const body = document.getElementById(bodyId);
+  const chev = document.getElementById(chevronId);
+  if (!body) return;
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  if (chev) chev.textContent = open ? '▼' : '▲';
+}
+
+// ════════════════════════════════════════════
+//  TABLE SHOW MORE / LESS
+// ════════════════════════════════════════════
+const _tableShown = {};
+function tableShowMore(tableId, btnId, pageSize) {
+  const table = document.getElementById(tableId);
+  const btn   = document.getElementById(btnId);
+  if (!table || !btn) return;
+  const rows = table.querySelectorAll('tbody tr[data-hidden]');
+  let shown = 0;
+  rows.forEach(row => {
+    if (shown < pageSize && row.dataset.hidden === 'true') {
+      row.style.display = '';
+      row.dataset.hidden = 'false';
+      shown++;
+    }
+  });
+  const remaining = table.querySelectorAll('tbody tr[data-hidden="true"]').length;
+  if (remaining === 0) {
+    btn.closest('.show-more-wrap').style.display = 'none';
+  } else {
+    btn.textContent = `Show ${Math.min(pageSize, remaining)} more ↓ (${remaining} left)`;
+  }
+}
+
 
 // URL → Vertical classification
 const VERT_PATTERNS = [
@@ -1487,316 +1849,366 @@ async function syncGSC(){
   }
 
   // ── Render the SEO tab with "all" domain selected ────────────────────
+  _buildDomainTabs();
+  _updateKPIs(allRows);
   renderSEOTab(allRows);
+  renderSegmentation();
 }
 
-// ── Master render — called on domain switch or after sync ─────────────────
-function renderSEOTab(rows){
-  if(!rows) rows=buildFilteredRows();
+// ── Master render ────────────────────────────────────────────────────────
+function renderSEOTab(rows) {
+  if (!rows) rows = buildFilteredRows();
   renderVerticalGrid(rows);
+  renderNonMatchingPages(rows);
   renderBlogTable(rows);
   renderKWMatrix(rows);
   renderTopPages(rows);
   renderTopQueries(rows);
   renderRankPages(rows);
   renderRankQueries(rows);
-  // Update KPI label
-  const lbl=document.getElementById('seoKpiDomainLabel');
-  if(lbl) lbl.textContent=_seoDomain==='all'?'· All Properties':'· '+_seoDomain;
 }
 
-function buildFilteredRows(){
-  const allRows=[];
-  Object.values(_seoData).forEach(d=>allRows.push(...d.rows));
-  if(_seoDomain==='all') return allRows;
-  return (_seoData[_seoDomain]||{rows:[]}).rows;
+// ── Sync domain tabs after GSC loads ─────────────────────────────────────
+function _buildDomainTabs() {
+  const domains = Object.keys(_seoData).sort();
+  const tabsEl  = document.getElementById('domainTabs');
+  if (tabsEl) {
+    tabsEl.innerHTML =
+      `<button class="fpill on" onclick="setFilter('domain','all',this)">All</button>` +
+      domains.map(d => `<button class="fpill" onclick="setFilter('domain','${d}',this)">${d.replace('.impacteers.com','')}</button>`).join('');
+  }
+  // Blog domain filter
+  const bdf = document.getElementById('blogDomainFilter');
+  if (bdf) bdf.innerHTML = '<option value="all">All Properties</option>' + domains.map(d => `<option value="${d}">${d}</option>`).join('');
+  // KW vertical filter
+  const allRows = [];
+  Object.values(_seoData).forEach(d => allRows.push(...d.rows));
+  const verts = [...new Set(allRows.map(r => getVertical(r.url, r.domain)))].sort();
+  const kwvf = document.getElementById('kwVertFilter');
+  if (kwvf) kwvf.innerHTML = '<option value="all">All Verticals</option>' + verts.map(v => `<option value="${v}">${v}</option>`).join('');
 }
 
-function setSeoDomain(domain,btn){
-  _seoDomain=domain;
-  document.querySelectorAll('#domainTabs .dtab').forEach(b=>b.classList.remove('on'));
-  if(btn) btn.classList.add('on');
-  const rows=buildFilteredRows();
-  // Update KPIs for this domain
-  let c=0,i=0,ps=0,pn=0;
-  rows.forEach(r=>{c+=r.clicks;i+=r.impressions;ps+=r.pos;pn++;});
-  const kc=document.getElementById('kSeoClicks'); if(kc)kc.textContent=c.toLocaleString();
-  const ki=document.getElementById('kSeoImpr');   if(ki)ki.textContent=fmtK(i);
-  const kp=document.getElementById('kSeoPos');    if(kp)kp.textContent=pn?(ps/pn).toFixed(1):'—';
-  const kt=document.getElementById('kSeoCTR');    if(kt)kt.textContent=c&&i?(c/i*100).toFixed(1)+'%':'—';
-  const lbl=document.getElementById('seoKpiDomainLabel');
-  if(lbl) lbl.textContent=domain==='all'?'· All Properties':'· '+domain;
-  renderSEOTab(rows);
-}
-
-// ── VERTICAL GRID ─────────────────────────────────────────────────────────
-function renderVerticalGrid(rows){
-  // Aggregate by vertical
-  const vertMap={};
-  rows.forEach(r=>{
-    const v=getVertical(r.url,r.domain);
-    if(!vertMap[v]) vertMap[v]={clicks:0,impr:0,posSum:0,posN:0,urlSet:new Set(),daily:Array(30).fill(0)};
-    vertMap[v].clicks+=r.clicks;
-    vertMap[v].impr+=r.impressions;
-    vertMap[v].posSum+=r.pos;
+// ── VERTICAL GRID ────────────────────────────────────────────────────────
+function renderVerticalGrid(rows) {
+  const vertMap = {};
+  rows.forEach(r => {
+    const v = getVertical(r.url, r.domain);
+    if (!vertMap[v]) vertMap[v] = { clicks: 0, impr: 0, posSum: 0, posN: 0, urlSet: new Set() };
+    vertMap[v].clicks   += r.clicks;
+    vertMap[v].impr     += r.impressions;
+    vertMap[v].posSum   += r.pos;
     vertMap[v].posN++;
     vertMap[v].urlSet.add(r.url);
   });
-  const totalClicks=rows.reduce((s,r)=>s+r.clicks,0)||1;
-  const sorted=Object.entries(vertMap).sort((a,b)=>b[1].clicks-a[1].clicks);
-
-  const grid=document.getElementById('vertGrid');
-  if(!grid)return;
-  if(!sorted.length){
-    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--sub);font-size:10px;padding:18px">No data yet — connect GSC and Sync</div>';
+  const total = rows.reduce((s, r) => s + r.clicks, 0) || 1;
+  const sorted = Object.entries(vertMap).sort((a, b) => b[1].clicks - a[1].clicks);
+  const grid = document.getElementById('vertGrid');
+  if (!grid) return;
+  if (!sorted.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--sub);font-size:10px;padding:18px">No data — connect GSC and Sync</div>';
     return;
   }
+  Object.values(_vertCharts).forEach(ch => { try { ch.destroy(); } catch(e) {} });
+  _vertCharts = {};
 
-  // Destroy old vertical charts
-  Object.values(_vertCharts).forEach(ch=>{try{ch.destroy();}catch(e){}});
-  _vertCharts={};
-
-  grid.innerHTML=sorted.map(([name,d])=>{
-    const share=((d.clicks/totalClicks)*100).toFixed(1);
-    const avgPos=d.posN?(d.posSum/d.posN).toFixed(1):'—';
-    const color=VERT_COLORS[name]||'#686868';
-    return `<div class="vert-card" onclick="filterByVertical('${name.replace(/'/g,"\\'")}',this)">
-      <div class="vert-card-hd">
-        <span class="vert-name">${name}</span>
-        <span class="vert-share">${share}%</span>
-      </div>
+  grid.innerHTML = sorted.map(([name, d]) => {
+    const share  = ((d.clicks / total) * 100).toFixed(1);
+    const avgPos = d.posN ? (d.posSum / d.posN).toFixed(1) : '—';
+    const color  = VERT_COLORS[name] || '#686868';
+    const isSelected = _filters.vertical === name;
+    return `<div class="vert-card${isSelected ? ' sel' : ''}" onclick="filterByVertical('${name.replace(/'/g, "\\'")}',this)">
+      <div class="vert-card-hd"><span class="vert-name">${name}</span><span class="vert-share">${share}%</span></div>
       <div class="vert-stats">
-        <div><div class="vert-stat-v" style="color:${color}">${fmtK(d.clicks)}</div><div class="vert-stat-l">Clicks</div></div>
+        <div><div class="vert-stat-v" style="color:${color}">${fmtK(d.clicks)}</div><div class="vert-stat-l">Traffic</div></div>
         <div><div class="vert-stat-v">${fmtK(d.impr)}</div><div class="vert-stat-l">Impr.</div></div>
-        <div><div class="vert-stat-v">${avgPos}</div><div class="vert-stat-l">Avg. Pos.</div></div>
+        <div><div class="vert-stat-v">${avgPos}</div><div class="vert-stat-l">Pos.</div></div>
         <div><div class="vert-stat-v">${d.urlSet.size}</div><div class="vert-stat-l">Pages</div></div>
       </div>
-      <div class="vert-chart"><canvas id="vChart_${name.replace(/\s+/g,'_')}"></canvas></div>
+      <div class="vert-chart"><canvas id="vChart_${name.replace(/\s+/g, '_')}"></canvas></div>
     </div>`;
   }).join('');
 
-  // Draw mini bar charts per vertical
-  requestAnimationFrame(()=>{
-    sorted.forEach(([name,d])=>{
-      const canvasId='vChart_'+name.replace(/\s+/g,'_');
-      const el=document.getElementById(canvasId);
-      if(!el)return;
-      // Build 8-bucket distribution from rows for this vertical
-      const vRows=rows.filter(r=>getVertical(r.url,r.domain)===name);
-      // Group by URL, take top 8 pages by clicks
-      const pgMap={};
-      vRows.forEach(r=>{if(!pgMap[r.url])pgMap[r.url]=0;pgMap[r.url]+=r.clicks;});
-      const labels=Object.entries(pgMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([u])=>{
-        try{return new URL(u).pathname.replace(/^\/|\/$/g,'').split('/').slice(-1)[0]||'/';}
-        catch(e){return u.split('/').pop()||u;}
-      });
-      const vals=Object.entries(pgMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([,v])=>v);
-      const color=VERT_COLORS[name]||'#686868';
-      _vertCharts[name]=new Chart(el,{
-        type:'bar',
-        data:{labels,datasets:[{data:vals,backgroundColor:color+'99',borderRadius:2}]},
-        options:{
-          responsive:true,maintainAspectRatio:false,
-          plugins:{legend:{display:false},tooltip:{
-            callbacks:{label:ctx=>`${ctx.raw.toLocaleString()} clicks`}
-          }},
-          scales:{x:{display:false},y:{display:false,beginAtZero:true}}
-        }
+  requestAnimationFrame(() => {
+    sorted.forEach(([name]) => {
+      const el = document.getElementById('vChart_' + name.replace(/\s+/g, '_'));
+      if (!el) return;
+      const vRows = rows.filter(r => getVertical(r.url, r.domain) === name);
+      const pgMap = {};
+      vRows.forEach(r => { pgMap[r.url] = (pgMap[r.url] || 0) + r.clicks; });
+      const top8 = Object.entries(pgMap).sort((a, b) => b[1] - a[1]).slice(0, 8);
+      const color = VERT_COLORS[name] || '#686868';
+      _vertCharts[name] = new Chart(el, {
+        type: 'bar',
+        data: { labels: top8.map(([u]) => { try { return new URL(u).pathname.split('/').filter(Boolean).slice(-1)[0] || '/'; } catch(e) { return u.split('/').pop() || u; } }),
+                datasets: [{ data: top8.map(([, v]) => v), backgroundColor: color + '99', borderRadius: 2 }] },
+        options: { responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw.toLocaleString() + ' traffic' } } },
+          scales: { x: { display: false }, y: { display: false, beginAtZero: true } } }
       });
     });
   });
 }
 
-function filterByVertical(name,card){
-  // Toggle filter
-  const wasSelected=card.classList.contains('sel');
-  document.querySelectorAll('.vert-card').forEach(c=>c.classList.remove('sel'));
-  const kwvf=document.getElementById('kwVertFilter');
-  if(wasSelected){
-    // Deselect — show all
-    if(kwvf) kwvf.value='all';
-    renderKWMatrix(buildFilteredRows());
-    renderBlogTable(buildFilteredRows());
-    renderTopPages(buildFilteredRows());
-    renderTopQueries(buildFilteredRows());
-    const lbl=document.getElementById('vertFilterLabel');
-    if(lbl)lbl.textContent='';
-  }else{
-    card.classList.add('sel');
-    if(kwvf) kwvf.value=name;
-    const filtered=buildFilteredRows().filter(r=>getVertical(r.url,r.domain)===name);
-    renderKWMatrix(filtered);
-    renderBlogTable(filtered);
-    renderTopPages(filtered);
-    renderTopQueries(filtered);
-    const lbl=document.getElementById('vertFilterLabel');
-    if(lbl)lbl.textContent='Filtered: '+name;
-  }
-}
+// ── NON-MATCHING PAGES ───────────────────────────────────────────────────
+function renderNonMatchingPages(rows) {
+  const panel = document.getElementById('nonMatchPanel');
+  if (!panel) return;
+  const otherRows = rows.filter(r => getVertical(r.url, r.domain) === 'Other');
+  if (!otherRows.length) { panel.style.display = 'none'; return; }
+  panel.style.display = '';
 
-// ── BLOG TABLE ────────────────────────────────────────────────────────────
-function renderBlogTable(rows){
-  if(!rows) rows=buildFilteredRows();
-  const bdf=document.getElementById('blogDomainFilter');
-  const domainFilter=bdf?bdf.value:'all';
-  // Aggregate blog rows
-  const urlMap={};
-  rows.forEach(r=>{
-    if(getVertical(r.url,r.domain)!=='Blog') return;
-    if(domainFilter!=='all'&&r.domain!==domainFilter) return;
-    if(!urlMap[r.url]) urlMap[r.url]={url:r.url,domain:r.domain,clicks:0,impr:0,ctrSum:0,posSum:0,n:0,topQ:''};
-    urlMap[r.url].clicks+=r.clicks;
-    urlMap[r.url].impr+=r.impressions;
-    urlMap[r.url].ctrSum+=r.ctr;
-    urlMap[r.url].posSum+=r.pos;
+  const urlMap = {};
+  otherRows.forEach(r => {
+    if (!urlMap[r.url]) urlMap[r.url] = { domain: r.domain, clicks: 0, impr: 0, ctrSum: 0, posSum: 0, n: 0, topQ: '' };
+    urlMap[r.url].clicks += r.clicks;
+    urlMap[r.url].impr   += r.impressions;
+    urlMap[r.url].ctrSum += r.ctr;
+    urlMap[r.url].posSum += r.pos;
     urlMap[r.url].n++;
-    if(!urlMap[r.url].topQ&&r.clicks>0) urlMap[r.url].topQ=r.query;
+    if (!urlMap[r.url].topQ && r.clicks > 0) urlMap[r.url].topQ = r.query;
   });
-  const sorted=Object.values(urlMap).sort((a,b)=>b.clicks-a.clicks).slice(0,50);
-  const tb=document.querySelector('#tBlog tbody');
-  if(!tb)return;
-  if(!sorted.length){
-    tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--sub);font-size:10px;padding:16px;border:none">No blog URLs found — ensure blog.impacteers.com and /blog/ pages are connected in GSC</td></tr>';
-    return;
-  }
-  tb.innerHTML=sorted.map(r=>{
-    const avgPos=r.n?(r.posSum/r.n).toFixed(1):'—';
-    const avgCTR=r.n?(r.ctrSum/r.n*100).toFixed(1)+'%':'—';
-    let slug=r.url;
-    try{slug=new URL(r.url).pathname;} catch(e){}
-    const pos=parseFloat(avgPos)||99;
-    return `<tr>
-      <td class="url" title="${r.url}">${slug}</td>
-      <td><span class="domain-badge">${r.domain}</span></td>
-      <td class="nr">${r.clicks.toLocaleString()}</td>
-      <td class="nr">${fmtK(r.impr)}</td>
-      <td class="nr">${avgCTR}</td>
-      <td class="nr"><span class="rdot ${rc(pos)}">${avgPos}</span></td>
-      <td style="font-size:9px;color:var(--sub);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.topQ||'—'}</td>
-    </tr>`;
+  const sorted = Object.values(urlMap).sort((a, b) => b.clicks - a.clicks);
+  const tb = document.querySelector('#tNonMatch tbody');
+  if (tb) tb.innerHTML = sorted.map(r => {
+    const pos = r.n ? (r.posSum / r.n).toFixed(1) : '—';
+    const ctr = r.n ? (r.ctrSum / r.n * 100).toFixed(1) + '%' : '—';
+    let slug = r.domain + r.url;
+    try { slug = new URL(r.url).pathname; } catch(e) {}
+    return `<tr><td class="url" title="${r.url}">${slug}</td><td><span class="domain-badge">${r.domain}</span></td><td class="nr">${r.clicks.toLocaleString()}</td><td class="nr">${fmtK(r.impr)}</td><td class="nr">${ctr}</td><td class="nr"><span class="rdot ${rc(pos)}">${pos}</span></td><td style="font-size:9px;color:var(--sub)">${r.topQ || '—'}</td></tr>`;
   }).join('');
 }
 
-// ── KEYWORD × PAGE MATRIX ────────────────────────────────────────────────
-function renderKWMatrix(rows){
-  if(!rows) rows=buildFilteredRows();
-  const kwvf=document.getElementById('kwVertFilter');
-  const vertFilter=kwvf?kwvf.value:'all';
+// ── BLOG TABLE ───────────────────────────────────────────────────────────
+function renderBlogTable(rows) {
+  const sourceRows = rows || buildFilteredRows();
+  const bdf = document.getElementById('blogDomainFilter');
+  const domFilter = bdf ? bdf.value : 'all';
 
-  // Group rows by vertical → url, flatten to sorted list
-  const byVert={};
-  rows.forEach(r=>{
-    const v=getVertical(r.url,r.domain);
-    if(vertFilter!=='all'&&v!==vertFilter) return;
-    if(!byVert[v]) byVert[v]={};
-    if(!byVert[v][r.url]) byVert[v][r.url]={domain:r.domain,clicks:0,queries:[]};
-    byVert[v][r.url].clicks+=r.clicks;
+  const urlMap = {};
+  sourceRows.forEach(r => {
+    if (getVertical(r.url, r.domain) !== 'Blog') return;
+    if (domFilter !== 'all' && r.domain !== domFilter) return;
+    if (!urlMap[r.url]) urlMap[r.url] = { domain: r.domain, clicks: 0, impr: 0, ctrSum: 0, posSum: 0, n: 0, topQ: '' };
+    urlMap[r.url].clicks += r.clicks;
+    urlMap[r.url].impr   += r.impressions;
+    urlMap[r.url].ctrSum += r.ctr;
+    urlMap[r.url].posSum += r.pos;
+    urlMap[r.url].n++;
+    if (!urlMap[r.url].topQ && r.clicks > 0) urlMap[r.url].topQ = r.query;
+  });
+  const sorted = Object.values(urlMap).sort((a, b) => b.clicks - a.clicks);
+  const SHOW = 20;
+  const tb = document.querySelector('#tBlog tbody');
+  if (!tb) return;
+
+  if (!sorted.length) {
+    tb.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--sub);font-size:10px;padding:16px;border:none">No blog URLs found in current filters</td></tr>';
+    document.getElementById('blogMoreWrap').style.display = 'none';
+    return;
+  }
+  tb.innerHTML = sorted.map((r, i) => {
+    const pos = r.n ? (r.posSum / r.n).toFixed(1) : '—';
+    const ctr = r.n ? (r.ctrSum / r.n * 100).toFixed(1) + '%' : '—';
+    let slug = r.url; try { slug = new URL(r.url).pathname; } catch(e) {}
+    const hidden = i >= SHOW ? 'data-hidden="true" style="display:none"' : '';
+    return `<tr ${hidden}><td class="url" title="${r.url}">${slug}</td><td><span class="domain-badge">${r.domain}</span></td><td class="nr">${r.clicks.toLocaleString()}</td><td class="nr">${fmtK(r.impr)}</td><td class="nr">${ctr}</td><td class="nr"><span class="rdot ${rc(pos)}">${pos}</span></td><td style="font-size:9px;color:var(--sub);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.topQ || '—'}</td></tr>`;
+  }).join('');
+
+  const moreWrap = document.getElementById('blogMoreWrap');
+  const moreBtn  = document.getElementById('blogMoreBtn');
+  if (sorted.length > SHOW) {
+    moreWrap.style.display = '';
+    moreBtn.textContent = `Show ${Math.min(20, sorted.length - SHOW)} more ↓ (${sorted.length - SHOW} left)`;
+    moreBtn.onclick = () => tableShowMore('tBlog', 'blogMoreBtn', 20);
+  } else {
+    moreWrap.style.display = 'none';
+  }
+}
+
+// ── KW × PAGES — collapsible per vertical ────────────────────────────────
+function renderKWMatrix(rows) {
+  const sourceRows = rows || buildFilteredRows();
+  const kwvf = document.getElementById('kwVertFilter');
+  const kwbf = document.getElementById('kwBrandFilter');
+  const vertFilter  = kwvf ? kwvf.value  : 'all';
+  const brandFilter = kwbf ? kwbf.value  : 'all';
+
+  // Apply additional local filters (on top of global filter)
+  let filtered = sourceRows;
+  if (vertFilter !== 'all')  filtered = filtered.filter(r => getVertical(r.url, r.domain) === vertFilter);
+  if (brandFilter !== 'all') filtered = filtered.filter(r => isBrand(r.query) === (brandFilter === 'brand'));
+
+  // Group by vertical → url → queries
+  const byVert = {};
+  filtered.forEach(r => {
+    const v = getVertical(r.url, r.domain);
+    if (!byVert[v]) byVert[v] = {};
+    if (!byVert[v][r.url]) byVert[v][r.url] = { domain: r.domain, clicks: 0, queries: [] };
+    byVert[v][r.url].clicks += r.clicks;
     byVert[v][r.url].queries.push(r);
   });
 
-  const tb=document.querySelector('#tKWMatrix tbody');
-  if(!tb)return;
-  if(!Object.keys(byVert).length){
-    tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--sub);font-size:10px;padding:16px;border:none">No data — connect GSC and Sync</td></tr>';
+  const container = document.getElementById('kwSections');
+  if (!container) return;
+  if (!Object.keys(byVert).length) {
+    container.innerHTML = '<div style="text-align:center;color:var(--sub);font-size:10px;padding:18px">No data matching current filters</div>';
     return;
   }
 
-  let html='';
-  Object.entries(byVert).sort((a,b)=>
-    Object.values(b[1]).reduce((s,u)=>s+u.clicks,0)-Object.values(a[1]).reduce((s,u)=>s+u.clicks,0)
-  ).forEach(([vert,pages])=>{
-    const vertTotal=Object.values(pages).reduce((s,u)=>s+u.clicks,0);
-    const color=VERT_COLORS[vert]||'#686868';
-    html+=`<tr class="kw-group-hd"><td colspan="7" style="color:${color}">▾ ${vert} — ${vertTotal.toLocaleString()} clicks · ${Object.keys(pages).length} pages</td></tr>`;
-    Object.entries(pages).sort((a,b)=>b[1].clicks-a[1].clicks).slice(0,20).forEach(([url,pd])=>{
-      let slug=url;try{slug=new URL(url).pathname;}catch(e){}
-      // Sort queries by clicks desc
-      pd.queries.sort((a,b)=>b.clicks-a.clicks).slice(0,5).forEach((qr,qi)=>{
-        const pos=parseFloat(qr.pos)||99;
-        html+=`<tr class="kw-child">
-          <td style="color:${color};font-size:9px;padding-left:14px">${qi===0?vert:''}</td>
-          <td class="url" style="font-size:9px" title="${url}">${qi===0?slug:''}</td>
-          <td style="font-size:10px">${qr.query}</td>
-          <td class="nr">${qr.clicks}</td>
-          <td class="nr">${fmtK(qr.impressions)}</td>
-          <td class="nr">${(qr.ctr*100).toFixed(1)}%</td>
-          <td class="nr"><span class="rdot ${rc(pos)}" style="width:22px;height:22px;font-size:9px">${qr.pos.toFixed(1)}</span></td>
-        </tr>`;
-      });
-    });
-  });
-  tb.innerHTML=html;
+  container.innerHTML = Object.entries(byVert)
+    .sort((a, b) => Object.values(b[1]).reduce((s, u) => s + u.clicks, 0) - Object.values(a[1]).reduce((s, u) => s + u.clicks, 0))
+    .map(([vert, pages]) => {
+      const vertTotal  = Object.values(pages).reduce((s, u) => s + u.clicks, 0);
+      const color      = VERT_COLORS[vert] || '#686868';
+      const pageCount  = Object.keys(pages).length;
+      const queryCount = Object.values(pages).reduce((s, u) => s + u.queries.length, 0);
+      const sectId     = 'kw_' + vert.replace(/\s+/g, '_');
+      const ROWS_LIMIT = 5; // queries per page shown by default
+
+      const tableRows = Object.entries(pages)
+        .sort((a, b) => b[1].clicks - a[1].clicks)
+        .map(([url, pd], pi) => {
+          let slug = url; try { slug = new URL(url).pathname; } catch(e) {}
+          const sortedQ = pd.queries.sort((a, b) => b.clicks - a.clicks);
+          return sortedQ.map((qr, qi) => {
+            const pos = qr.pos.toFixed(1);
+            const hidden = qi >= ROWS_LIMIT ? 'data-hidden="true" style="display:none"' : '';
+            return `<tr class="kw-child" ${hidden}>
+              <td style="color:${color};font-size:9px;padding-left:14px">${qi === 0 ? (pi < 10 ? vert : '') : ''}</td>
+              <td class="url" style="font-size:9px" title="${url}">${qi === 0 ? slug : ''}</td>
+              <td><span class="domain-badge" style="${qi===0?'':'opacity:0'}">${qi===0?pd.domain:''}</span></td>
+              <td style="font-size:10px">${qr.query}</td>
+              <td>${brandTag(qr.query)}</td>
+              <td class="nr">${qr.clicks}</td>
+              <td class="nr">${fmtK(qr.impressions)}</td>
+              <td class="nr">${(qr.ctr * 100).toFixed(1)}%</td>
+              <td class="nr"><span class="rdot ${rc(pos)}" style="width:22px;height:22px;font-size:9px">${pos}</span></td>
+            </tr>`;
+          }).join('');
+        }).join('');
+
+      return `<div class="kw-section" id="${sectId}">
+        <div class="kw-sect-hd open" onclick="kwToggle('${sectId}')">
+          <span class="kw-sect-name" style="color:${color}">${vert}</span>
+          <span class="kw-sect-meta">${vertTotal.toLocaleString()} traffic · ${pageCount} pages · ${queryCount} queries</span>
+          <span class="kw-sect-chevron">▲</span>
+        </div>
+        <div class="kw-sect-body open">
+          <table style="width:100%">
+            <thead><tr><th style="width:70px">Vertical</th><th>Landing Page</th><th>Property</th><th>Query</th><th>Type</th><th class="nr">Traffic</th><th class="nr">Impr.</th><th class="nr">CTR</th><th class="nr">Pos.</th></tr></thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        </div>
+      </div>`;
+    }).join('');
 }
 
-// ── TOP PAGES (domain-filtered) ───────────────────────────────────────────
-function renderTopPages(rows){
-  if(!rows)rows=buildFilteredRows();
-  const pgMap={};
-  rows.forEach(r=>{
-    if(!pgMap[r.url])pgMap[r.url]={clicks:0,impr:0,ctrSum:0,n:0};
-    pgMap[r.url].clicks+=r.clicks;pgMap[r.url].impr+=r.impressions;pgMap[r.url].ctrSum+=r.ctr;pgMap[r.url].n++;
-  });
-  const top=Object.entries(pgMap).sort((a,b)=>b[1].clicks-a[1].clicks).slice(0,20);
-  const tb=document.querySelector('#tPages tbody');
-  if(!tb)return;
-  tb.innerHTML=top.length?top.map(([url,d],i)=>{
-    const tier=i<3?'<span class="b bg">Top 3</span>':i<10?'<span class="b bo">Top 10</span>':'<span class="b bm">Top 20</span>';
-    const ctr=d.n?(d.ctrSum/d.n*100).toFixed(1)+'%':'—';
-    let slug=url;try{slug=new URL(url).pathname;}catch(e){}
-    return `<tr><td class="url" title="${url}">${slug}</td><td class="nr">${d.clicks.toLocaleString()}</td><td class="nr">${tier}</td><td class="nr">${ctr}</td></tr>`;
-  }).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--sub);font-size:10px;padding:14px;border:none">No data</td></tr>';
+function kwToggle(sectId) {
+  const sect = document.getElementById(sectId);
+  if (!sect) return;
+  const hd   = sect.querySelector('.kw-sect-hd');
+  const body = sect.querySelector('.kw-sect-body');
+  const chev = sect.querySelector('.kw-sect-chevron');
+  const open = body.classList.contains('open');
+  body.classList.toggle('open', !open);
+  if (hd) hd.classList.toggle('open', !open);
+  if (chev) chev.textContent = open ? '▼' : '▲';
 }
 
-function renderTopQueries(rows){
-  if(!rows)rows=buildFilteredRows();
-  const qMap={};
-  rows.forEach(r=>{
-    if(!qMap[r.query])qMap[r.query]={clicks:0,posSum:0,n:0};
-    qMap[r.query].clicks+=r.clicks;qMap[r.query].posSum+=r.pos;qMap[r.query].n++;
-  });
-  const top=Object.entries(qMap).sort((a,b)=>b[1].clicks-a[1].clicks).slice(0,20);
-  const tb=document.querySelector('#tQueries tbody');
-  if(!tb)return;
-  tb.innerHTML=top.length?top.map(([q,d],i)=>{
-    const tier=i<3?'<span class="b bg">Top 3</span>':i<10?'<span class="b bo">Top 10</span>':'<span class="b bm">Top 20</span>';
-    const avgPos=d.n?(d.posSum/d.n).toFixed(1):0;
-    return `<tr><td style="font-size:10px">${q}</td><td class="nr">${d.clicks.toLocaleString()}</td><td class="nr"><span class="rdot ${rc(avgPos)}">${avgPos}</span></td><td class="nr">${tier}</td></tr>`;
-  }).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--sub);font-size:10px;padding:14px;border:none">No data</td></tr>';
+function kwExpandAll(expand) {
+  document.querySelectorAll('.kw-sect-body').forEach(b => b.classList.toggle('open', expand));
+  document.querySelectorAll('.kw-sect-hd').forEach(h  => h.classList.toggle('open', expand));
+  document.querySelectorAll('.kw-sect-chevron').forEach(c => c.textContent = expand ? '▲' : '▼');
 }
 
-function renderRankPages(rows){
-  if(!rows)rows=buildFilteredRows();
-  const pgMap={};
-  rows.forEach(r=>{
-    if(!pgMap[r.url])pgMap[r.url]={impr:0,ctrSum:0,posSum:0,n:0};
-    pgMap[r.url].impr+=r.impressions;pgMap[r.url].ctrSum+=r.ctr;pgMap[r.url].posSum+=r.pos;pgMap[r.url].n++;
+// ── TOP PAGES ────────────────────────────────────────────────────────────
+function renderTopPages(rows) {
+  const sourceRows = rows || buildFilteredRows();
+  const limit = parseInt(document.getElementById('topPagesLimit')?.value || '20') || Infinity;
+  const pgMap = {};
+  sourceRows.forEach(r => {
+    if (!pgMap[r.url]) pgMap[r.url] = { domain: r.domain, clicks: 0, impr: 0, ctrSum: 0, n: 0 };
+    pgMap[r.url].clicks += r.clicks;
+    pgMap[r.url].impr   += r.impressions;
+    pgMap[r.url].ctrSum += r.ctr;
+    pgMap[r.url].n++;
   });
-  const best=Object.entries(pgMap).filter(([,d])=>d.impr>=10).sort((a,b)=>(a[1].posSum/a[1].n)-(b[1].posSum/b[1].n)).slice(0,10);
-  const tb=document.querySelector('#tRankPages tbody');
-  if(!tb)return;
-  tb.innerHTML=best.length?best.map(([url,d])=>{
-    const pos=(d.posSum/d.n).toFixed(1);
-    const ctr=d.n?(d.ctrSum/d.n*100).toFixed(1)+'%':'—';
-    let slug=url;try{slug=new URL(url).pathname;}catch(e){}
-    return `<tr><td class="url" title="${url}">${slug}</td><td class="nr"><span class="rdot ${rc(pos)}">${pos}</span></td><td class="nr">${fmtK(d.impr)}</td><td class="nr">${ctr}</td></tr>`;
-  }).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--sub);font-size:10px;padding:14px;border:none">Insufficient data (need ≥10 impressions)</td></tr>';
+  const top = Object.entries(pgMap).sort((a, b) => b[1].clicks - a[1].clicks).slice(0, limit);
+  const tb = document.querySelector('#tPages tbody');
+  if (!tb) return;
+  tb.innerHTML = top.length ? top.map(([url, d], i) => {
+    const tier = i < 3 ? '<span class="b bg">Top 3</span>' : i < 10 ? '<span class="b bo">Top 10</span>' : '<span class="b bm">Top 20</span>';
+    const ctr  = d.n ? (d.ctrSum / d.n * 100).toFixed(1) + '%' : '—';
+    const vert = getVertical(url, d.domain);
+    const color = VERT_COLORS[vert] || '#686868';
+    let slug = url; try { slug = new URL(url).pathname; } catch(e) {}
+    return `<tr><td class="url" title="${url}">${slug}</td><td><span style="font-size:9px;color:${color}">${vert}</span></td><td class="nr">${d.clicks.toLocaleString()}</td><td class="nr">${tier}</td><td class="nr">${ctr}</td></tr>`;
+  }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--sub);font-size:10px;padding:14px;border:none">No data</td></tr>';
 }
 
-function renderRankQueries(rows){
-  if(!rows)rows=buildFilteredRows();
-  const qMap={};
-  rows.forEach(r=>{
-    if(!qMap[r.query])qMap[r.query]={impr:0,ctrSum:0,posSum:0,n:0};
-    qMap[r.query].impr+=r.impressions;qMap[r.query].ctrSum+=r.ctr;qMap[r.query].posSum+=r.pos;qMap[r.query].n++;
+function renderTopQueries(rows) {
+  const sourceRows = rows || buildFilteredRows();
+  const limit = parseInt(document.getElementById('topQueriesLimit')?.value || '20') || Infinity;
+  const qMap = {};
+  sourceRows.forEach(r => {
+    if (!qMap[r.query]) qMap[r.query] = { clicks: 0, posSum: 0, n: 0 };
+    qMap[r.query].clicks += r.clicks;
+    qMap[r.query].posSum += r.pos;
+    qMap[r.query].n++;
   });
-  const best=Object.entries(qMap).filter(([,d])=>d.impr>=10).sort((a,b)=>(a[1].posSum/a[1].n)-(b[1].posSum/b[1].n)).slice(0,10);
-  const tb=document.querySelector('#tRankQ tbody');
-  if(!tb)return;
-  tb.innerHTML=best.length?best.map(([q,d])=>{
-    const pos=(d.posSum/d.n).toFixed(1);
-    const ctr=d.n?(d.ctrSum/d.n*100).toFixed(1)+'%':'—';
-    return `<tr><td style="font-size:10px">${q}</td><td class="nr"><span class="rdot ${rc(pos)}">${pos}</span></td><td class="nr">${fmtK(d.impr)}</td><td class="nr">${ctr}</td></tr>`;
-  }).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--sub);font-size:10px;padding:14px;border:none">Insufficient data</td></tr>';
+  const top = Object.entries(qMap).sort((a, b) => b[1].clicks - a[1].clicks).slice(0, limit);
+  const tb = document.querySelector('#tQueries tbody');
+  if (!tb) return;
+  tb.innerHTML = top.length ? top.map(([q, d], i) => {
+    const tier   = i < 3 ? '<span class="b bg">Top 3</span>' : i < 10 ? '<span class="b bo">Top 10</span>' : '<span class="b bm">Top 20</span>';
+    const avgPos = d.n ? (d.posSum / d.n).toFixed(1) : 0;
+    return `<tr><td style="font-size:10px">${q}</td><td>${brandTag(q)}</td><td class="nr">${d.clicks.toLocaleString()}</td><td class="nr"><span class="rdot ${rc(avgPos)}">${avgPos}</span></td><td class="nr">${tier}</td></tr>`;
+  }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--sub);font-size:10px;padding:14px;border:none">No data</td></tr>';
+}
+
+function renderRankPages(rows) {
+  const sourceRows = rows || buildFilteredRows();
+  const pgMap = {};
+  sourceRows.forEach(r => {
+    if (!pgMap[r.url]) pgMap[r.url] = { domain: r.domain, impr: 0, ctrSum: 0, posSum: 0, n: 0 };
+    pgMap[r.url].impr += r.impressions;
+    pgMap[r.url].ctrSum += r.ctr;
+    pgMap[r.url].posSum += r.pos;
+    pgMap[r.url].n++;
+  });
+  const best = Object.entries(pgMap).filter(([, d]) => d.impr >= 10)
+    .sort((a, b) => (a[1].posSum / a[1].n) - (b[1].posSum / b[1].n)).slice(0, 10);
+  const tb = document.querySelector('#tRankPages tbody');
+  if (!tb) return;
+  tb.innerHTML = best.length ? best.map(([url, d]) => {
+    const pos  = (d.posSum / d.n).toFixed(1);
+    const ctr  = d.n ? (d.ctrSum / d.n * 100).toFixed(1) + '%' : '—';
+    const vert = getVertical(url, d.domain);
+    const col  = VERT_COLORS[vert] || '#686868';
+    let slug = url; try { slug = new URL(url).pathname; } catch(e) {}
+    return `<tr><td class="url" title="${url}">${slug}</td><td><span style="font-size:9px;color:${col}">${vert}</span></td><td class="nr"><span class="rdot ${rc(pos)}">${pos}</span></td><td class="nr">${fmtK(d.impr)}</td><td class="nr">${ctr}</td></tr>`;
+  }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--sub);font-size:10px;padding:14px;border:none">Insufficient data</td></tr>';
+}
+
+function renderRankQueries(rows) {
+  const sourceRows = rows || buildFilteredRows();
+  const qMap = {};
+  sourceRows.forEach(r => {
+    if (!qMap[r.query]) qMap[r.query] = { impr: 0, ctrSum: 0, posSum: 0, n: 0 };
+    qMap[r.query].impr += r.impressions;
+    qMap[r.query].ctrSum += r.ctr;
+    qMap[r.query].posSum += r.pos;
+    qMap[r.query].n++;
+  });
+  const best = Object.entries(qMap).filter(([, d]) => d.impr >= 10)
+    .sort((a, b) => (a[1].posSum / a[1].n) - (b[1].posSum / b[1].n)).slice(0, 10);
+  const tb = document.querySelector('#tRankQ tbody');
+  if (!tb) return;
+  tb.innerHTML = best.length ? best.map(([q, d]) => {
+    const pos = (d.posSum / d.n).toFixed(1);
+    const ctr = d.n ? (d.ctrSum / d.n * 100).toFixed(1) + '%' : '—';
+    return `<tr><td style="font-size:10px">${q}</td><td>${brandTag(q)}</td><td class="nr"><span class="rdot ${rc(pos)}">${pos}</span></td><td class="nr">${fmtK(d.impr)}</td><td class="nr">${ctr}</td></tr>`;
+  }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--sub);font-size:10px;padding:14px;border:none">Insufficient data</td></tr>';
 }
 
 async function syncGBP(){
@@ -1954,13 +2366,246 @@ async function syncMetaAds(adAccountId){
 // ════════════════════════════════════════════
 //  AI — OpenRouter via backend SSE proxy
 // ════════════════════════════════════════════
+//  SEGMENTATION — called after every GSC sync
+//  Uses ALL rows (no active filter) for full picture
+// ════════════════════════════════════════════
+function renderSegmentation() {
+  // Gather all rows across all domains
+  const allRows = [];
+  Object.values(_seoData).forEach(d => allRows.push(...d.rows));
+  if (!allRows.length) return;
+
+  // Aggregate to query level
+  const qMap = {};
+  allRows.forEach(r => {
+    if (!qMap[r.query]) qMap[r.query] = { clicks:0, impr:0, ctrSum:0, posSum:0, n:0, brand:isBrand(r.query) };
+    qMap[r.query].clicks  += r.clicks;
+    qMap[r.query].impr    += r.impressions;
+    qMap[r.query].ctrSum  += r.ctr;
+    qMap[r.query].posSum  += r.pos;
+    qMap[r.query].n++;
+  });
+  const qArr = Object.entries(qMap).map(([q, d]) => ({
+    q, clicks:d.clicks, impr:d.impr,
+    ctr:d.ctrSum/d.n, pos:d.posSum/d.n, brand:d.brand
+  }));
+
+  // Also aggregate at page level for page-based insights
+  const pgMap = {};
+  allRows.forEach(r => {
+    if (!pgMap[r.url]) pgMap[r.url] = { clicks:0, impr:0, ctrSum:0, posSum:0, n:0, domain:r.domain, topQ:'' };
+    pgMap[r.url].clicks  += r.clicks;
+    pgMap[r.url].impr    += r.impressions;
+    pgMap[r.url].ctrSum  += r.ctr;
+    pgMap[r.url].posSum  += r.pos;
+    pgMap[r.url].n++;
+    if(!pgMap[r.url].topQ && r.clicks>0) pgMap[r.url].topQ = r.query;
+  });
+  const pArr = Object.entries(pgMap).map(([url, d]) => ({
+    url, clicks:d.clicks, impr:d.impr,
+    ctr:d.ctrSum/d.n, pos:d.posSum/d.n, domain:d.domain, topQ:d.topQ
+  }));
+
+  const noRow = (cols, msg) => `<tr><td colspan="${cols}" style="text-align:center;color:var(--sub);font-size:10px;padding:12px;border:none">${msg}</td></tr>`;
+  const slug  = url => { try { return new URL(url).pathname; } catch(e) { return url; } };
+
+  // ── QUICK WINS: Non-brand, pos ≤ 10, CTR ≥ 3%, has traffic ────────────
+  const wins = qArr
+    .filter(r => !r.brand && r.pos <= 10 && r.ctr >= 0.03 && r.clicks > 0)
+    .sort((a, b) => b.clicks - a.clicks).slice(0, 10);
+
+  const tbSW = document.querySelector('#tSW tbody');
+  if (tbSW) tbSW.innerHTML = wins.length
+    ? wins.map(r => `<tr>
+        <td style="font-size:10px">${r.q}</td>
+        <td class="nr"><span class="rdot ${rc(r.pos.toFixed(1))}">${r.pos.toFixed(1)}</span></td>
+        <td class="nr"><span class="b bg">${(r.ctr*100).toFixed(1)}%</span></td>
+        <td class="nr">${r.clicks.toLocaleString()}</td>
+      </tr>`).join('')
+    : noRow(4, 'No non-brand queries in top 10 with CTR ≥ 3% yet');
+
+  // ── NEED SERIOUS ATTENTION: high impressions, very low CTR ─────────────
+  const attn = qArr
+    .filter(r => r.impr >= 500 && r.ctr < 0.015)
+    .sort((a, b) => b.impr - a.impr).slice(0, 10);
+
+  const tbSH = document.querySelector('#tSH tbody');
+  if (tbSH) tbSH.innerHTML = attn.length
+    ? attn.map(r => `<tr>
+        <td style="font-size:10px">${r.q} ${r.brand ? '<span class="brand-tag">Brand</span>' : ''}</td>
+        <td class="nr"><span class="rdot ${rc(r.pos.toFixed(1))}">${r.pos.toFixed(1)}</span></td>
+        <td class="nr"><span class="b br">${(r.ctr*100).toFixed(2)}%</span></td>
+        <td class="nr">${fmtK(r.impr)}</td>
+      </tr>`).join('')
+    : noRow(4, 'No high-impression, low-CTR queries found');
+
+  // ── OPPORTUNITIES: pos 11–20, decent impressions — push to page 1 ──────
+  const opps = qArr
+    .filter(r => !r.brand && r.pos > 10 && r.pos <= 20 && r.impr >= 100)
+    .sort((a, b) => b.impr - a.impr).slice(0, 10);
+
+  const tbSO = document.querySelector('#tSO tbody');
+  if (tbSO) tbSO.innerHTML = opps.length
+    ? opps.map(r => `<tr>
+        <td style="font-size:10px">${r.q}</td>
+        <td class="nr"><span class="rdot ${rc(r.pos.toFixed(1))}">${r.pos.toFixed(1)}</span></td>
+        <td class="nr">${fmtK(r.impr)}</td>
+        <td class="nr"><span class="b bo">Top 10</span></td>
+      </tr>`).join('')
+    : noRow(4, 'No page-2 queries with enough impressions yet');
+
+  // ── MORE EFFORT, LESS PROFIT: deep pages with minimal traffic ──────────
+  const weak = pArr
+    .filter(r => r.pos > 20 && r.clicks <= 5 && r.impr >= 50)
+    .sort((a, b) => b.impr - a.impr).slice(0, 10);
+
+  const tbSWk = document.querySelector('#tSWk tbody');
+  if (tbSWk) tbSWk.innerHTML = weak.length
+    ? weak.map(r => `<tr>
+        <td class="url" style="font-size:9px" title="${r.url}">${slug(r.url)}</td>
+        <td class="nr"><span class="rdot rx">${r.pos.toFixed(1)}</span></td>
+        <td class="nr">${(r.ctr*100).toFixed(2)}%</td>
+        <td class="nr">${r.clicks}</td>
+      </tr>`).join('')
+    : noRow(4, 'No low-traffic, deep-position pages found');
+
+  // ── Update segmentation subtitle with data freshness ──────────────────
+  const subtitle = document.querySelector('#t-seg .kpi-lbl, #t-seg [style*="color:var(--sub)"]');
+  const dateRange = document.getElementById('rangeSelect')?.value || 'Last 30 Days';
+  const sub=document.getElementById('segSubtitle');
+  if(sub)sub.textContent=`Auto-classified · ${dateRange} · ${allRows.length.toLocaleString()} queries from ${Object.keys(_seoData).length} propert${Object.keys(_seoData).length===1?'y':'ies'}`;
+
+  // Store segmentation findings for AI context
+  window._segFindings = { wins, attn, opps, weak };
+}
+
+// ════════════════════════════════════════════
 let aiHistory=[];
 
 function buildCTX(){
-  const kpis={};
-  document.querySelectorAll('.kcard').forEach(card=>{const lbl=card.querySelector('.kcard-lbl')?.textContent.trim();const val=card.querySelector('.kcard-val')?.textContent.trim();if(lbl&&val)kpis[lbl]=val;});
-  const isLive=connectedProps.google.connected||connectedProps.meta.connected;
-  return `You are a senior marketing analyst reviewing a ${isLive?'LIVE':'sample'} marketing dashboard.\nDATE RANGE: ${document.getElementById('rangeSelect')?.value||'Last 30 Days'}\nDATA: ${isLive?'Live API data':'Sample data'}\n\nCURRENT KPIs:\n${Object.entries(kpis).map(([k,v])=>`• ${k}: ${v}`).join('\n')}\n\nBe specific, concise, actionable. Use bullet points. Reference exact metrics.`;
+  const isLive = connectedProps.google.connected || connectedProps.meta.connected;
+  const dateRange = document.getElementById('rangeSelect')?.value || 'Last 30 Days';
+
+  // ── KPI cards ────────────────────────────────────────────────────────
+  const kpis = {};
+  document.querySelectorAll('.kcard').forEach(card => {
+    const lbl = card.querySelector('.kcard-lbl')?.textContent.trim();
+    const val = card.querySelector('.kcard-val')?.textContent.trim();
+    if (lbl && val && val !== '—') kpis[lbl] = val;
+  });
+
+  // ── GSC deep context from _seoData ───────────────────────────────────
+  let seoContext = '';
+  if (Object.keys(_seoData).length > 0) {
+    const allRows = [];
+    Object.values(_seoData).forEach(d => allRows.push(...d.rows));
+
+    // Brand split
+    const brandRows = allRows.filter(r => isBrand(r.query));
+    const nbRows    = allRows.filter(r => !isBrand(r.query));
+    const bClicks   = brandRows.reduce((s, r) => s + r.clicks, 0);
+    const nbClicks  = nbRows.reduce((s, r) => s + r.clicks, 0);
+    const total     = bClicks + nbClicks || 1;
+
+    // Vertical breakdown
+    const vertMap = {};
+    allRows.forEach(r => {
+      const v = getVertical(r.url, r.domain);
+      if (!vertMap[v]) vertMap[v] = { clicks: 0, impr: 0 };
+      vertMap[v].clicks += r.clicks;
+      vertMap[v].impr   += r.impressions;
+    });
+    const vertSummary = Object.entries(vertMap)
+      .sort((a, b) => b[1].clicks - a[1].clicks)
+      .map(([v, d]) => `  ${v}: ${d.clicks.toLocaleString()} traffic (${((d.clicks/total)*100).toFixed(1)}%)`)
+      .join('
+');
+
+    // Top 10 pages
+    const pgMap = {};
+    allRows.forEach(r => {
+      if (!pgMap[r.url]) pgMap[r.url] = { clicks:0, impr:0, posSum:0, n:0 };
+      pgMap[r.url].clicks  += r.clicks;
+      pgMap[r.url].impr    += r.impressions;
+      pgMap[r.url].posSum  += r.pos;
+      pgMap[r.url].n++;
+    });
+    const topPages = Object.entries(pgMap)
+      .sort((a, b) => b[1].clicks - a[1].clicks).slice(0, 10)
+      .map(([url, d]) => {
+        let slug = url; try { slug = new URL(url).pathname; } catch(e) {}
+        return `  ${slug} — ${d.clicks.toLocaleString()} traffic, pos ${(d.posSum/d.n).toFixed(1)}`;
+      }).join('
+');
+
+    // Top 10 non-brand queries
+    const qMap = {};
+    nbRows.forEach(r => {
+      if (!qMap[r.query]) qMap[r.query] = { clicks:0, posSum:0, impr:0, n:0 };
+      qMap[r.query].clicks  += r.clicks;
+      qMap[r.query].posSum  += r.pos;
+      qMap[r.query].impr    += r.impressions;
+      qMap[r.query].n++;
+    });
+    const topQueries = Object.entries(qMap)
+      .sort((a, b) => b[1].clicks - a[1].clicks).slice(0, 10)
+      .map(([q, d]) => `  "${q}" — ${d.clicks} traffic, pos ${(d.posSum/d.n).toFixed(1)}, ${d.impr.toLocaleString()} impr`)
+      .join('
+');
+
+    // Segmentation findings
+    const seg = window._segFindings || {};
+    const segCtx = [
+      seg.wins?.length  ? `QUICK WINS (non-brand, top-10, CTR≥3%):
+${seg.wins.slice(0,5).map(r=>`  "${r.q}" pos ${r.pos.toFixed(1)} CTR ${(r.ctr*100).toFixed(1)}%`).join('
+')}` : '',
+      seg.attn?.length  ? `NEED ATTENTION (high impr, low CTR):
+${seg.attn.slice(0,5).map(r=>`  "${r.q}" pos ${r.pos.toFixed(1)} CTR ${(r.ctr*100).toFixed(2)}% impr ${fmtK(r.impr)}`).join('
+')}` : '',
+      seg.opps?.length  ? `OPPORTUNITIES (page 2, push to page 1):
+${seg.opps.slice(0,5).map(r=>`  "${r.q}" pos ${r.pos.toFixed(1)} impr ${fmtK(r.impr)}`).join('
+')}` : '',
+    ].filter(Boolean).join('
+
+');
+
+    seoContext = `
+CONNECTED PROPERTIES: ${Object.keys(_seoData).join(', ')}
+TOTAL GSC ROWS ANALYSED: ${allRows.length.toLocaleString()}
+
+BRAND VS NON-BRAND SPLIT:
+  Brand traffic:     ${bClicks.toLocaleString()} (${((bClicks/total)*100).toFixed(1)}% of total)
+  Non-brand traffic: ${nbClicks.toLocaleString()} (${((nbClicks/total)*100).toFixed(1)}% of total)
+
+VERTICAL BREAKDOWN (by traffic):
+${vertSummary}
+
+TOP 10 PAGES:
+${topPages}
+
+TOP 10 NON-BRAND QUERIES:
+${topQueries}
+
+${segCtx ? 'SEGMENTATION ANALYSIS:
+' + segCtx : ''}`;
+  }
+
+  return `You are a senior SEO & marketing analyst reviewing LIVE data for a multi-property EdTech platform.
+DATE RANGE: ${dateRange}
+DATA STATUS: ${isLive ? 'LIVE — from Google Analytics, Search Console' : 'Sample data — not yet synced'}
+
+CURRENT KPIs:
+${Object.entries(kpis).map(([k, v]) => `• ${k}: ${v}`).join('
+')}
+${seoContext}
+
+INSTRUCTIONS:
+- Be specific, cite exact numbers from the data above
+- Lead with the highest-impact insight first
+- Use bullet points, keep it scannable
+- For SEO questions, reference actual pages and queries from the data
+- Distinguish brand vs non-brand performance where relevant
+- Flag the biggest opportunities with concrete next actions`;
 }
 
 function aiMsg(role,text){
@@ -1991,11 +2636,72 @@ async function aiSend(){
   btn.disabled=false;btn.textContent='Send';
 }
 
+// ── QUICK ACTION PROMPTS ─────────────────────────────────────────────────
+const QUICK_ACTIONS = [
+  { label:'Analyse SEO + Organic', prompt:'Analyse my SEO and organic performance. What are the top 3 opportunities and what should I prioritise this week?' },
+  { label:'Brand vs Non-Brand',    prompt:'Give me a brand vs non-brand breakdown. What does our brand search share tell us, and how can we grow non-brand traffic?' },
+  { label:'Top Opportunities',     prompt:'Based on my segmentation data, what are the top 5 opportunities? Focus on pages and queries that are on page 2 or have high impressions but low CTR.' },
+  { label:'What needs fixing?',    prompt:'Which pages or queries need urgent attention? Look at high impression / low CTR items and tell me exactly what to fix.' },
+  { label:'Blog Performance',      prompt:'How is the blog performing across my properties? Which blog posts are driving the most traffic and which ones need improvement?' },
+];
+
+function renderQuickActions(){
+  const wrap=document.querySelector('.ai-row');
+  if(!wrap||document.getElementById('quickActions'))return;
+  const chips=document.createElement('div');
+  chips.id='quickActions';
+  chips.style.cssText='display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;';
+  chips.innerHTML=QUICK_ACTIONS.map(a=>
+    `<button onclick="quickAsk(${JSON.stringify(a.prompt).replace(/'/g,"\'")})" style="font-size:9px;padding:4px 10px;background:var(--s2);border:1px solid var(--b2);color:var(--sub);border-radius:12px;cursor:pointer;font-family:'Poppins',sans-serif;transition:all .15s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color='var(--sub)'">${a.label}</button>`
+  ).join('');
+  wrap.parentNode.insertBefore(chips,wrap);
+}
+
+function quickAsk(prompt){
+  const inp=document.getElementById('aiIn');
+  if(inp){ inp.value=prompt; aiSend(); }
+}
+
+// ── POST-SYNC AI AUTO ANALYSIS ─────────────────────────────────────────
+function postSyncAI(){
+  const msgs=document.getElementById('aiMsgs');
+  if(!msgs)return;
+  renderQuickActions();
+
+  // Only auto-analyse if this is the first sync (chat is still on welcome msg)
+  const isFirstSync = aiHistory.length <= 1;
+
+  // Always add a "data ready" notice
+  const notice=document.createElement('div');
+  notice.className='msg ai';
+  notice.style.cssText='background:rgba(176,217,188,.06);border-color:rgba(176,217,188,.2);font-size:10px;color:var(--sub);';
+  notice.innerHTML='✅ <strong style="color:var(--green)">Data synced</strong> — '+
+    Object.keys(_seoData).length+' propert'+(Object.keys(_seoData).length===1?'y':'ies')+
+    ' · '+Object.values(_seoData).reduce((s,d)=>s+d.rows.length,0).toLocaleString()+' GSC rows · '+
+    (window._segFindings?.wins?.length||0)+' quick wins · '+
+    (window._segFindings?.opps?.length||0)+' opportunities identified';
+  msgs.appendChild(notice);
+  msgs.scrollTop=msgs.scrollHeight;
+
+  if(isFirstSync){
+    // Auto-send an analysis prompt
+    setTimeout(()=>{
+      const inp=document.getElementById('aiIn');
+      if(inp){
+        inp.value='Analyse my SEO and organic performance across all connected properties. Start with brand vs non-brand split, then highlight the top 3 opportunities from the segmentation matrix.';
+        aiSend();
+      }
+    }, 800);
+  }
+}
+
 function initAI(){
   document.getElementById('aiKeyStatus').textContent='OpenRouter';
   document.getElementById('aiKeyStatus').className='ai-key-status connected';
   document.getElementById('aiSetupNote').style.display='none';
-  aiMsg('ai','Hello! I am your AI Marketing Analyst, powered by OpenRouter.\n\nI have no data yet — connect your sources and run **Sync All** to load live numbers, then ask me anything.\n\nFor example:\n• *What are my biggest SEO opportunities right now?*\n• *Which pages need attention based on impressions vs CTR?*\n• *How is my paid vs organic performance trending?*\n\nOnce data is synced I will analyse your real KPIs in context.');
+  aiMsg('ai','Hello! I am your AI Marketing Analyst, powered by OpenRouter.\n\n→ Connect your sources and click **Sync All** — I will automatically run a full SEO analysis the moment data loads.\n\nWhile you wait, use the quick action buttons above to queue a question, or type anything below.');
+  // Render quick actions on init too
+  setTimeout(renderQuickActions, 100);
 }
 
 async function replyReview(reviewId,btn){
