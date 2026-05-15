@@ -72,6 +72,7 @@ const GOOGLE_SCOPES = [
   'https://www.googleapis.com/auth/analytics.readonly',
   'https://www.googleapis.com/auth/webmasters.readonly',
   'https://www.googleapis.com/auth/business.manage',
+  'https://www.googleapis.com/auth/adwords',  // Google Ads API
   'openid', 'email', 'profile'
 ].join(' ');
 
@@ -572,6 +573,60 @@ app.post('/api/ai/chat', aiRateLimit, async (req, res) => {
 
 
 // ═══════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════
+//  GOOGLE ADS PROXY
+//  Requires: GOOGLE_ADS_DEVELOPER_TOKEN + GOOGLE_ADS_CUSTOMER_ID in .env
+// ═══════════════════════════════════════════════════════════
+app.post('/api/gads/report', async (req, res) => {
+  const devToken  = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
+  const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID;
+  if (!devToken || !customerId)
+    return res.status(503).json({ error: 'GOOGLE_ADS_DEVELOPER_TOKEN and GOOGLE_ADS_CUSTOMER_ID not set in Render env vars' });
+  if (!req.session?.google)
+    return res.status(401).json({ error: 'Not signed in with Google' });
+  try {
+    const token = await getGoogleToken(req.session);
+    const cleanId = customerId.replace(/-/g, '');
+    const { data } = await axios.post(
+      `https://googleads.googleapis.com/v17/customers/${cleanId}/googleAds:search`,
+      { query: req.body.query },
+      { headers: { Authorization: `Bearer ${token}`, 'developer-token': devToken, 'Content-Type': 'application/json' } }
+    );
+    res.json(data);
+  } catch (e) {
+    const msg = e.response?.data?.error?.details?.[0]?.errors?.[0]?.message || e.response?.data?.error?.message || e.message;
+    console.error('Google Ads report error:', msg);
+    res.status(500).json({ error: msg });
+  }
+});
+
+app.get('/api/gads/campaigns', async (req, res) => {
+  const devToken   = process.env.GOOGLE_ADS_DEVELOPER_TOKEN;
+  const customerId = process.env.GOOGLE_ADS_CUSTOMER_ID;
+  if (!devToken || !customerId)
+    return res.status(503).json({ error: 'GOOGLE_ADS_DEVELOPER_TOKEN and GOOGLE_ADS_CUSTOMER_ID not set' });
+  if (!req.session?.google)
+    return res.status(401).json({ error: 'Not signed in' });
+  try {
+    const token   = await getGoogleToken(req.session);
+    const cleanId = customerId.replace(/-/g, '');
+    const { start, end } = req.query;
+    const dr = start && end ? `AND segments.date BETWEEN '${start}' AND '${end}'` : 'AND segments.date DURING LAST_30_DAYS';
+    const query = `SELECT campaign.id, campaign.name, campaign.status, metrics.clicks, metrics.impressions, metrics.cost_micros, metrics.conversions, metrics.ctr, metrics.average_cpc FROM campaign WHERE campaign.status != 'REMOVED' ${dr} ORDER BY metrics.cost_micros DESC LIMIT 50`;
+    const { data } = await axios.post(
+      `https://googleads.googleapis.com/v17/customers/${cleanId}/googleAds:search`,
+      { query },
+      { headers: { Authorization: `Bearer ${token}`, 'developer-token': devToken, 'Content-Type': 'application/json' } }
+    );
+    res.json(data);
+  } catch (e) {
+    const msg = e.response?.data?.error?.details?.[0]?.errors?.[0]?.message || e.response?.data?.error?.message || e.message;
+    console.error('Google Ads campaigns error:', msg);
+    res.status(500).json({ error: msg });
+  }
+});
+
 //  CATCH-ALL — serve the dashboard for any unknown route
 // ═══════════════════════════════════════════════════════════
 app.get('*', (_req, res) => {
@@ -587,7 +642,12 @@ app.use((err, _req, res, _next) => {
 // ── START ─────────────────────────────────────────────────
 const PORT = parseInt(process.env.PORT) || 3000;
 app.listen(PORT, () => {
+  const env = process.env.NODE_ENV || 'not set';
+  const envOk = env === 'production';
   console.log(`\n✅  Marketing Dashboard running`);
-  console.log(`   Local:  http://localhost:${PORT}`);
-  console.log(`   Env:    ${process.env.NODE_ENV || 'development'}\n`);
+  console.log(`   Port:   ${PORT}`);
+  console.log(`   Env:    ${env}${envOk ? '' : '  ⚠ Set NODE_ENV=production in Render env vars'}`);
+  if (!process.env.GOOGLE_CLIENT_ID)  console.warn('   ⚠ GOOGLE_CLIENT_ID is not set');
+  if (!process.env.OPENROUTER_API_KEY) console.warn('   ⚠ OPENROUTER_API_KEY is not set');
+  console.log('');
 });
