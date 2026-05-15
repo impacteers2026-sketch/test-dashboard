@@ -49,6 +49,21 @@ app.use(session({
 // ── HEALTH CHECK ──────────────────────────────────────────
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
+// ── SESSION DEBUG — check cookie + session state (remove in production later)
+app.get('/debug/session', (req, res) => {
+  res.json({
+    sessionID       : req.sessionID || null,
+    hasGoogle       : !!req.session?.google,
+    hasMeta         : !!req.session?.meta,
+    cookieHeader    : req.headers.cookie || 'none',
+    secure          : req.secure,
+    protocol        : req.protocol,
+    nodeEnv         : process.env.NODE_ENV || 'not set',
+    trustProxy      : app.get('trust proxy'),
+    xForwardedProto : req.headers['x-forwarded-proto'] || 'none',
+  });
+});
+
 
 // ═══════════════════════════════════════════════════════════
 //  GOOGLE OAUTH  (Authorization Code Flow)
@@ -305,6 +320,27 @@ app.get('/api/properties', async (req, res) => {
   }
 
   res.json(result);
+});
+
+// ── PROPERTIES DEBUG — returns raw API responses for diagnosing missing data
+app.get('/debug/properties', async (req, res) => {
+  if (!req.session?.google) return res.status(401).json({ error: 'Not signed in with Google' });
+  const debug = {};
+  try {
+    const token = await getGoogleToken(req.session);
+    const [a, b, c] = await Promise.allSettled([
+      axios.get('https://analyticsadmin.googleapis.com/v1beta/accountSummaries', { headers: { Authorization: `Bearer ${token}` } }),
+      axios.get('https://searchconsole.googleapis.com/webmasters/v3/sites',       { headers: { Authorization: `Bearer ${token}` } }),
+      axios.get('https://mybusinessaccountmanagement.googleapis.com/v1/accounts', { headers: { Authorization: `Bearer ${token}` } }),
+    ]);
+    debug.ga4  = a.status === 'fulfilled' ? { ok: true, accounts: (a.value.data.accountSummaries||[]).length } : { ok: false, error: a.reason?.response?.data?.error?.message || a.reason?.message };
+    debug.gsc  = b.status === 'fulfilled' ? { ok: true, sites: (b.value.data.siteEntry||[]).length }          : { ok: false, error: b.reason?.response?.data?.error?.message || b.reason?.message };
+    debug.gbp  = c.status === 'fulfilled' ? { ok: true, accounts: (c.value.data.accounts||[]).length }        : { ok: false, error: c.reason?.response?.data?.error?.message || c.reason?.message };
+    debug.tokenWorks = true;
+  } catch(e) {
+    debug.tokenError = e.message;
+  }
+  res.json(debug);
 });
 
 
