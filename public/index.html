@@ -280,6 +280,42 @@ tr:hover td{background:var(--s2);}
   .kbd-hint{display:none;}
   .conn-modal{width:100%;margin:10px;}
 }
+
+/* ════ SEO DOMAIN TABS ════ */
+.domain-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.dtab{padding:5px 14px;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;background:var(--s2);border:1px solid var(--b2);color:var(--sub);transition:all .2s;letter-spacing:.2px;}
+.dtab.on{background:var(--gd);border-color:rgba(176,217,188,.35);color:var(--green);}
+.dtab:hover:not(.on){color:var(--text);}
+
+/* ════ VERTICAL GRID ════ */
+.vert-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:4px;}
+.vert-card{background:var(--s2);border:1px solid var(--b2);border-radius:9px;padding:14px;cursor:pointer;transition:border-color .18s;}
+.vert-card:hover,.vert-card.sel{border-color:rgba(176,217,188,.4);background:rgba(176,217,188,.04);}
+.vert-card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.vert-name{font-size:12px;font-weight:600;}
+.vert-share{font-size:9px;font-weight:700;padding:2px 7px;border-radius:3px;background:var(--gd);color:var(--green);}
+.vert-stats{display:flex;gap:16px;margin-bottom:10px;}
+.vert-stat-v{font-size:18px;font-weight:700;letter-spacing:-.5px;}
+.vert-stat-l{font-size:9px;color:var(--sub);margin-top:2px;}
+.vert-chart{position:relative;height:40px;}
+
+/* ════ KEYWORD MATRIX ════ */
+.kw-group-hd{background:var(--s2);cursor:pointer;}
+.kw-group-hd td{font-size:10px;font-weight:600;color:var(--green);padding:8px 10px;}
+.kw-child{font-size:10px;}
+.kw-child:hover td{background:var(--s3);}
+
+/* ════ BLOG DOMAIN BADGE ════ */
+.domain-badge{font-size:8px;background:var(--s3);border:1px solid var(--b2);color:var(--sub);border-radius:3px;padding:1px 5px;white-space:nowrap;}
+
+/* ════ GADS SETUP NOTICE ════ */
+.gads-info{background:rgba(237,208,160,.06);border:1px solid rgba(237,208,160,.25);border-radius:8px;padding:14px 16px;margin-bottom:14px;}
+.gads-info-title{font-size:12px;font-weight:600;color:var(--orange);margin-bottom:8px;}
+.gads-info p{font-size:11px;color:var(--sub);line-height:1.7;margin-bottom:6px;}
+.gads-info code{background:var(--s2);border:1px solid var(--b2);padding:1px 5px;border-radius:3px;font-size:10px;color:var(--text);}
+.gads-steps{list-style:none;counter-reset:step;margin-top:8px;}
+.gads-steps li{counter-increment:step;display:flex;gap:8px;font-size:10px;color:var(--sub);margin-bottom:5px;line-height:1.5;}
+.gads-steps li::before{content:counter(step);width:16px;height:16px;border-radius:3px;background:var(--s2);color:var(--text);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 </style>
 </head>
 <body>
@@ -388,55 +424,94 @@ tr:hover td{background:var(--s2);}
 
 <!-- ══════════ SEO ══════════ -->
 <div id="t-seo" class="main">
+
+  <!-- Domain filter -->
+  <div class="domain-tabs" id="domainTabs">
+    <button class="dtab on" onclick="setSeoDomain('all',this)">All Properties</button>
+    <!-- Populated dynamically after GSC sync -->
+  </div>
+
+  <!-- Aggregate KPIs -->
   <div class="kpi-row">
-    <div class="kpi-lbl">SEO Health</div>
+    <div class="kpi-lbl">
+      Organic Performance
+      <span id="seoKpiDomainLabel" style="font-size:9px;color:var(--sub);font-weight:400;text-transform:none;letter-spacing:0"></span>
+    </div>
     <div class="kpi-g cols-5">
-      <div class="kcard"><div class="kcard-lbl">Organic Sessions</div><div class="kcard-val">—</div><div class="kcard-chg nt" style="font-size:10px;color:var(--sub)">—</div></div>
-      <div class="kcard"><div class="kcard-lbl">Impressions (GSC)</div><div class="kcard-val">—</div><div class="kcard-chg nt" style="font-size:10px;color:var(--sub)">—</div></div>
-      <div class="kcard"><div class="kcard-lbl">Avg. CTR</div><div class="kcard-val">—</div><div class="kcard-chg nt" style="font-size:10px;color:var(--sub)">—</div></div>
-      <div class="kcard"><div class="kcard-lbl">Avg. Position</div><div class="kcard-val">—</div><div class="kcard-chg nt" style="font-size:10px;color:var(--sub)">—</div></div>
-      <div class="kcard"><div class="kcard-lbl">Organic Leads</div><div class="kcard-val">—</div><div class="kcard-chg nt" style="font-size:10px;color:var(--sub)">—</div></div>
+      <div class="kcard"><div class="kcard-lbl">Organic Clicks</div><div class="kcard-val" id="kSeoClicks">—</div><div class="kcard-chg nt">—</div></div>
+      <div class="kcard"><div class="kcard-lbl">Impressions</div><div class="kcard-val" id="kSeoImpr">—</div><div class="kcard-chg nt">—</div></div>
+      <div class="kcard"><div class="kcard-lbl">Avg. Position</div><div class="kcard-val" id="kSeoPos">—</div><div class="kcard-chg nt">—</div></div>
+      <div class="kcard"><div class="kcard-lbl">Avg. CTR</div><div class="kcard-val" id="kSeoCTR">—</div><div class="kcard-chg nt">—</div></div>
+      <div class="kcard"><div class="kcard-lbl">GA4 Key Events</div><div class="kcard-val" id="kSeoLeads">—</div><div class="kcard-chg nt" style="font-size:9px;color:var(--sub)">form_submit · generate_lead</div></div>
     </div>
   </div>
+
+  <!-- Vertical breakdown grid -->
   <div class="panel" style="margin-bottom:14px">
-    <div class="ph"><span class="pt">Landing Page × Query Matrix</span><span class="ps">GSC · Last 30 Days</span></div>
-    <table id="tPivot">
-      <thead><tr><th>Landing Page</th><th>Top Query</th><th class="nr">Traffic</th><th class="nr">Impressions</th><th class="nr">CTR</th><th class="nr">Leads</th><th class="nr">Avg. Pos.</th></tr></thead>
+    <div class="ph">
+      <span class="pt">Vertical Breakdown</span>
+      <span class="ps">Segmented by URL pattern · click to drill down</span>
+      <span class="ph-right" style="font-size:10px;color:var(--sub)" id="vertFilterLabel"></span>
+    </div>
+    <div class="vert-grid" id="vertGrid">
+      <div style="grid-column:1/-1;text-align:center;color:var(--sub);font-size:10px;padding:18px">Connect GSC then Sync to load vertical breakdown</div>
+    </div>
+  </div>
+
+  <!-- Blog Performance (always its own section) -->
+  <div class="panel" style="margin-bottom:14px">
+    <div class="ph">
+      <span class="pt">Blog Performance</span>
+      <span class="ps">All /blog/ URLs across connected properties</span>
+      <select id="blogDomainFilter" style="font-size:10px;margin-left:auto" onchange="renderBlogTable()">
+        <option value="all">All Properties</option>
+      </select>
+    </div>
+    <table id="tBlog">
+      <thead><tr><th>Blog Post URL</th><th>Property</th><th class="nr">Clicks</th><th class="nr">Impr.</th><th class="nr">CTR</th><th class="nr">Position</th><th>Top Query</th></tr></thead>
       <tbody></tbody>
     </table>
   </div>
+
+  <!-- Keyword × Page matrix, grouped by vertical -->
+  <div class="panel" style="margin-bottom:14px">
+    <div class="ph">
+      <span class="pt">Keywords × Pages</span>
+      <span class="ps">Every query mapped to its landing page — grouped by vertical</span>
+      <select id="kwVertFilter" style="font-size:10px;margin-left:auto" onchange="renderKWMatrix()">
+        <option value="all">All Verticals</option>
+      </select>
+    </div>
+    <table id="tKWMatrix">
+      <thead><tr><th>Vertical</th><th>Landing Page</th><th>Query</th><th class="nr">Clicks</th><th class="nr">Impr.</th><th class="nr">CTR</th><th class="nr">Pos.</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- Top pages + Top queries (now filtered by active domain) -->
   <div class="row c2">
     <div class="panel">
       <div class="ph"><span class="pt">Top Pages by Clicks</span><span class="ps">Top 3 / 10 / 20 Tiers</span></div>
-      <table id="tPages">
-        <thead><tr><th>Landing Page</th><th class="nr">Clicks</th><th class="nr">Tier</th><th class="nr">CTR</th></tr></thead>
-        <tbody></tbody>
-      </table>
+      <table id="tPages"><thead><tr><th>Landing Page</th><th class="nr">Clicks</th><th class="nr">Tier</th><th class="nr">CTR</th></tr></thead><tbody></tbody></table>
     </div>
     <div class="panel">
       <div class="ph"><span class="pt">Top Queries by Clicks</span><span class="ps">Top 3 / 10 / 20 Tiers</span></div>
-      <table id="tQueries">
-        <thead><tr><th>Query</th><th class="nr">Clicks</th><th class="nr">Position</th><th class="nr">Tier</th></tr></thead>
-        <tbody></tbody>
-      </table>
+      <table id="tQueries"><thead><tr><th>Query</th><th class="nr">Clicks</th><th class="nr">Pos.</th><th class="nr">Tier</th></tr></thead><tbody></tbody></table>
     </div>
   </div>
   <div class="row c2">
     <div class="panel">
-      <div class="ph"><span class="pt">Top Ranking Pages</span><span class="ps">Best average positions</span></div>
-      <table id="tRankPages">
-        <thead><tr><th>Page</th><th class="nr">Avg. Pos.</th><th class="nr">Impressions</th><th class="nr">CTR</th></tr></thead>
-        <tbody></tbody>
-      </table>
+      <div class="ph"><span class="pt">Best Ranking Pages</span><span class="ps">Lowest avg. position, ≥10 impressions</span></div>
+      <table id="tRankPages"><thead><tr><th>Page</th><th class="nr">Pos.</th><th class="nr">Impr.</th><th class="nr">CTR</th></tr></thead><tbody></tbody></table>
     </div>
     <div class="panel">
-      <div class="ph"><span class="pt">Top Ranking Queries</span><span class="ps">Best average positions</span></div>
-      <table id="tRankQ">
-        <thead><tr><th>Query</th><th class="nr">Avg. Pos.</th><th class="nr">Impressions</th><th class="nr">CTR</th></tr></thead>
-        <tbody></tbody>
-      </table>
+      <div class="ph"><span class="pt">Best Ranking Queries</span><span class="ps">Lowest avg. position, ≥10 impressions</span></div>
+      <table id="tRankQ"><thead><tr><th>Query</th><th class="nr">Pos.</th><th class="nr">Impr.</th><th class="nr">CTR</th></tr></thead><tbody></tbody></table>
     </div>
   </div>
+
+  <!-- Hidden pivot (still used by AI context builder) -->
+  <table id="tPivot" style="display:none"><thead><tr></tr></thead><tbody></tbody></table>
 </div>
 
 <!-- ══════════ SOCIAL ══════════ -->
@@ -519,7 +594,17 @@ tr:hover td{background:var(--s2);}
 
 <!-- ══════════ ADS ══════════ -->
 <div id="t-ads" class="main">
-  <div class="ads-notice">⚡ Paid Ads data shown below is sample data. <span>Connect your Meta Ad Account ID in "Connect Sources" for live Meta Ads. Google Ads API requires a backend — see the guide in the modal.</span></div>
+  <div class="gads-info">
+    <div class="gads-info-title">⚡ Google Ads — Additional Setup Required</div>
+    <p>The Google Ads API is <strong>different</strong> from the standard Google OAuth you've already connected. Even with the API enabled in Google Cloud Console, you need three more things:</p>
+    <ol class="gads-steps">
+      <li>A <strong>Developer Token</strong> — apply in your Google Ads account → Settings → API Center. Test tokens work for your own accounts.</li>
+      <li>Your <strong>Customer ID</strong> — the 10-digit number (xxx-xxx-xxxx) in the top-right of Google Ads.</li>
+      <li>A <strong>Manager Account (MCC)</strong> if accessing multiple accounts — or use the direct Customer ID if you have one account.</li>
+    </ol>
+    <p>Add <code>GOOGLE_ADS_DEVELOPER_TOKEN</code> and <code>GOOGLE_ADS_CUSTOMER_ID</code> to your Render env vars, then reconnect Google (the adwords scope will now be included) and click Sync.</p>
+  </div>
+  <div class="ads-notice" id="adsLabel">⚡ Meta Ads data requires your Ad Account ID in Connect Sources. Google Ads will load once the Developer Token + Customer ID are set in Render env vars.</div>
   <div class="ptabs">
     <div class="pt2 on" onclick="activePlatTab(this)">Combined</div>
     <div class="pt2" onclick="activePlatTab(this)">Google Ads</div>
@@ -1200,7 +1285,7 @@ async function syncAll(){
   if(statusEl)statusEl.textContent='';
   showToast('Pulling live data…','loading',20000);
   const tasks=[];
-  if(connectedProps.google.connected){tasks.push(syncGA4(),syncGSC(),syncGBP());}
+  if(connectedProps.google.connected){tasks.push(syncGA4(),syncGSC(),syncGBP(),syncGoogleAds());}
   if(connectedProps.meta.connected){
     tasks.push(syncMeta(),syncInstagram());
     const adId=document.getElementById('mAdAccountId')?.value.trim();
@@ -1221,6 +1306,50 @@ async function syncAll(){
   updateTrigger();
 }
 
+// ════════════════════════════════════════════
+//  SEO DATA STORE — built by syncGSC
+// ════════════════════════════════════════════
+let _seoData = {};     // { domain → { clicks, impr, posSum, posN, rows[] } }
+let _seoDomain = 'all'; // current domain filter in SEO tab
+let _vertCharts = {};   // Chart instances keyed by verticalName
+
+// URL → Vertical classification
+const VERT_PATTERNS = [
+  { v:'Blog',        r:/\/blog\//i },
+  { v:'Courses',     r:/\/(course|program|learn|bootcamp|training|curriculum)/i },
+  { v:'Jobs',        r:/\/(jobs?|careers?|vacancy|vacancies|hire|hiring|placement)/i },
+  { v:'Events',      r:/\/(events?|webinar|workshop|seminar)/i },
+  { v:'Exam Prep',   r:/\/(exam|test-series|quiz|tnpsc|rrb|mock|practice)/i },
+  { v:'Tamil',       r:/\/ta\//i },
+  { v:'Companies',   r:/\/(companies|employers?|company|recruiters?)/i },
+  { v:'Mentors',     r:/\/(mentor|instructor|tutor|faculty)/i },
+  { v:'Pricing',     r:/\/(pricing|plans?|subscribe|enroll)/i },
+  { v:'About',       r:/\/(about|team|story|press|contact|support)/i },
+  { v:'Resources',   r:/\/(resource|guide|article|ebook|whitepaper)/i },
+];
+const VERT_COLORS = {
+  'Homepage'  :'#B0D9BC','Blog':'#EDD0A0','Courses':'#C8D8EA',
+  'Jobs'      :'#E8AAAA','Events':'#C8AACC','Exam Prep':'#94C5C8',
+  'Tamil'     :'#EDD0A0','Companies':'#A0C4D9','Mentors':'#B8D8A0',
+  'Pricing'   :'#D4B8D8','About':'#C8C8B0','Resources':'#C8D4A0','Other':'#686868'
+};
+
+function getVertical(url, domain) {
+  if (domain && /^blog\./i.test(domain.replace(/^https?:\/\//,''))) return 'Blog';
+  let path = url;
+  try { path = new URL(url).pathname; } catch(e) { path = ('/' + url.split('/').slice(1).join('/')); }
+  if (!path || path === '/') return 'Homepage';
+  for (const {v,r} of VERT_PATTERNS) { if (r.test(path)) return v; }
+  return 'Other';
+}
+
+function getDomain(url) {
+  try { return new URL(url).hostname.replace(/^www\./,''); }
+  catch(e) { return url.split('/')[0] || '?'; }
+}
+
+function fmtK(n){return n>=1000?(n/1000).toFixed(1)+'K':n.toString();}
+
 // Shared lead accumulators — updated across sync calls, used for charts
 let _leads={organic:0,ads:0,gbp:0,meta:0,social:0};
 
@@ -1228,8 +1357,13 @@ async function syncGA4(){
   const sel=connectedProps.google.ga4.filter(p=>p.selected);if(!sel.length)return;
   const{start,end}=getDateRange();
   let totalSess=0,totalConv=0,daily=Array(30).fill(0);
+
+  // KEY EVENTS — fetch named events that represent leads
+  // GA4 calls them keyEvents; the API metric is still 'conversions'
+  // We also pull top eventName breakdown to show what's firing
   for(const prop of sel){
     try{
+      // Organic sessions + key events (conversions)
       const r=await fetch(`/api/ga4/report/${prop.id}`,{
         method:'POST',headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
@@ -1247,12 +1381,39 @@ async function syncGA4(){
         const c=parseInt(row.metricValues[1].value||0);
         totalSess+=s;totalConv+=c;if(i<30)daily[i]+=s;
       });
+
+      // Top key events breakdown (shows which events are marked as conversions)
+      try{
+        const ev=await fetch(`/api/ga4/report/${prop.id}`,{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({
+            dateRanges:[{startDate:start,endDate:end}],
+            metrics:[{name:'eventCount'},{name:'conversions'}],
+            dimensions:[{name:'eventName'}],
+            orderBys:[{metric:{metricName:'conversions'},desc:true}],
+            limit:10
+          })
+        });
+        const ed=await ev.json();
+        if(!ed.error && ed.rows && ed.rows.length){
+          // Update the GA4 key events subtitle with actual event names
+          const topEvent=ed.rows.find(r=>parseInt(r.metricValues[1].value)>0);
+          const evLbl=document.querySelector('#kSeoLeads + .kcard-chg');
+          if(evLbl && topEvent){
+            evLbl.textContent=ed.rows.filter(r=>parseInt(r.metricValues[1].value)>0)
+              .slice(0,3).map(r=>r.dimensionValues[0].value).join(' · ')||'No key events set';
+          }
+        }
+      }catch(ee){ /* events breakdown non-critical */ }
     }catch(e){console.error('GA4 error for prop',prop.id,e);throw e;}
   }
   _leads.organic=totalConv;
   setKPI('Organic Traffic',totalSess.toLocaleString());
   setKPI('Organic Sessions',totalSess.toLocaleString());
   setKPI('Organic Leads',totalConv.toLocaleString());
+  // Update SEO tab key event KPI
+  const ksl=document.getElementById('kSeoLeads');
+  if(ksl) ksl.textContent=totalConv.toLocaleString();
   refreshTrafficChart(daily);
   refreshLeadsChart(_leads.organic,_leads.ads,_leads.gbp,_leads.meta,_leads.social);
 }
@@ -1260,8 +1421,12 @@ async function syncGA4(){
 async function syncGSC(){
   const sel=connectedProps.google.gsc.filter(s=>s.selected);if(!sel.length)return;
   const{start,end}=getDateRange();
-  let clicks=0,impr=0,posSum=0,posN=0;
-  const allRows=[];
+
+  // Reset SEO data store
+  _seoData={};
+  let totalClicks=0,totalImpr=0,posSum=0,posN=0;
+  const allRows=[]; // {domain, url, query, clicks, impressions, ctr, pos}
+
   for(const site of sel){
     try{
       const r=await fetch('/api/gsc/query',{
@@ -1270,107 +1435,368 @@ async function syncGSC(){
       });
       const d=await r.json();
       if(d.error)throw new Error('GSC: '+JSON.stringify(d.error));
+
+      const domain=getDomain(site.url);
+      if(!_seoData[domain]) _seoData[domain]={clicks:0,impr:0,posSum:0,posN:0,rows:[]};
+
       (d.rows||[]).forEach(row=>{
-        clicks+=row.clicks;impr+=row.impressions;posSum+=row.position;posN++;
-        allRows.push({page:row.keys[0],query:row.keys[1],clicks:row.clicks,impressions:row.impressions,ctr:row.ctr,pos:row.position});
+        const url=row.keys[0], query=row.keys[1];
+        const rowObj={domain,url,query,clicks:row.clicks,impressions:row.impressions,ctr:row.ctr,pos:row.position};
+        allRows.push(rowObj);
+        _seoData[domain].rows.push(rowObj);
+        _seoData[domain].clicks+=row.clicks;
+        _seoData[domain].impr+=row.impressions;
+        _seoData[domain].posSum+=row.position;
+        _seoData[domain].posN++;
+        totalClicks+=row.clicks;totalImpr+=row.impressions;posSum+=row.position;posN++;
       });
     }catch(e){console.error('GSC error for',site.url,e);throw e;}
   }
 
-  // KPIs
+  // ── Update global KPIs ────────────────────────────────────────────────
   const avgPos=posN?(posSum/posN).toFixed(1):'—';
-  const avgCTR=clicks&&impr?(clicks/impr*100).toFixed(1)+'%':'—';
-  setKPI('Impressions (GSC)',impr>9999?(impr/1000).toFixed(1)+'K':impr.toString());
+  const avgCTR=totalClicks&&totalImpr?(totalClicks/totalImpr*100).toFixed(1)+'%':'—';
+  setKPI('Organic Traffic',totalClicks.toLocaleString());
+  setKPI('Impressions (GSC)',totalImpr>9999?fmtK(totalImpr):totalImpr.toString());
   setKPI('Avg. Position',avgPos);
   setKPI('Avg. CTR',avgCTR);
-  setKPI('Organic Traffic',clicks.toLocaleString());
+  // SEO-tab specific KPIs
+  const kc=document.getElementById('kSeoClicks');   if(kc)kc.textContent=totalClicks.toLocaleString();
+  const ki=document.getElementById('kSeoImpr');     if(ki)ki.textContent=fmtK(totalImpr);
+  const kp=document.getElementById('kSeoPos');      if(kp)kp.textContent=avgPos;
+  const kt=document.getElementById('kSeoCTR');      if(kt)kt.textContent=avgCTR;
 
-  // Pivot table — best query per page
-  const pmap={};
-  allRows.forEach(row=>{
-    if(!pmap[row.page]||row.clicks>pmap[row.page].clicks)
-      pmap[row.page]={query:row.query,clicks:row.clicks,impressions:row.impressions,ctr:(row.ctr*100).toFixed(1)+'%',pos:row.pos.toFixed(1)};
+  // ── Build domain tabs ─────────────────────────────────────────────────
+  const domainTabsEl=document.getElementById('domainTabs');
+  if(domainTabsEl){
+    const domains=Object.keys(_seoData).sort();
+    const extra=domains.map(d=>`<button class="dtab" onclick="setSeoDomain('${d}',this)">${d}</button>`).join('');
+    // Rebuild keeping the All button
+    domainTabsEl.innerHTML=`<button class="dtab on" onclick="setSeoDomain('all',this)">All Properties</button>${extra}`;
+
+    // Blog domain filter select
+    const bdf=document.getElementById('blogDomainFilter');
+    if(bdf){ bdf.innerHTML='<option value="all">All Properties</option>'+domains.map(d=>`<option value="${d}">${d}</option>`).join(''); }
+
+    // KW vertical filter
+    const kwvf=document.getElementById('kwVertFilter');
+    if(kwvf){
+      const verts=[...new Set(allRows.map(r=>getVertical(r.url,r.domain)))].sort();
+      kwvf.innerHTML='<option value="all">All Verticals</option>'+verts.map(v=>`<option value="${v}">${v}</option>`).join('');
+    }
+  }
+
+  // ── Render the SEO tab with "all" domain selected ────────────────────
+  renderSEOTab(allRows);
+}
+
+// ── Master render — called on domain switch or after sync ─────────────────
+function renderSEOTab(rows){
+  if(!rows) rows=buildFilteredRows();
+  renderVerticalGrid(rows);
+  renderBlogTable(rows);
+  renderKWMatrix(rows);
+  renderTopPages(rows);
+  renderTopQueries(rows);
+  renderRankPages(rows);
+  renderRankQueries(rows);
+  // Update KPI label
+  const lbl=document.getElementById('seoKpiDomainLabel');
+  if(lbl) lbl.textContent=_seoDomain==='all'?'· All Properties':'· '+_seoDomain;
+}
+
+function buildFilteredRows(){
+  const allRows=[];
+  Object.values(_seoData).forEach(d=>allRows.push(...d.rows));
+  if(_seoDomain==='all') return allRows;
+  return (_seoData[_seoDomain]||{rows:[]}).rows;
+}
+
+function setSeoDomain(domain,btn){
+  _seoDomain=domain;
+  document.querySelectorAll('#domainTabs .dtab').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  const rows=buildFilteredRows();
+  // Update KPIs for this domain
+  let c=0,i=0,ps=0,pn=0;
+  rows.forEach(r=>{c+=r.clicks;i+=r.impressions;ps+=r.pos;pn++;});
+  const kc=document.getElementById('kSeoClicks'); if(kc)kc.textContent=c.toLocaleString();
+  const ki=document.getElementById('kSeoImpr');   if(ki)ki.textContent=fmtK(i);
+  const kp=document.getElementById('kSeoPos');    if(kp)kp.textContent=pn?(ps/pn).toFixed(1):'—';
+  const kt=document.getElementById('kSeoCTR');    if(kt)kt.textContent=c&&i?(c/i*100).toFixed(1)+'%':'—';
+  const lbl=document.getElementById('seoKpiDomainLabel');
+  if(lbl) lbl.textContent=domain==='all'?'· All Properties':'· '+domain;
+  renderSEOTab(rows);
+}
+
+// ── VERTICAL GRID ─────────────────────────────────────────────────────────
+function renderVerticalGrid(rows){
+  // Aggregate by vertical
+  const vertMap={};
+  rows.forEach(r=>{
+    const v=getVertical(r.url,r.domain);
+    if(!vertMap[v]) vertMap[v]={clicks:0,impr:0,posSum:0,posN:0,urlSet:new Set(),daily:Array(30).fill(0)};
+    vertMap[v].clicks+=r.clicks;
+    vertMap[v].impr+=r.impressions;
+    vertMap[v].posSum+=r.pos;
+    vertMap[v].posN++;
+    vertMap[v].urlSet.add(r.url);
   });
-  refreshPivot(pmap);
+  const totalClicks=rows.reduce((s,r)=>s+r.clicks,0)||1;
+  const sorted=Object.entries(vertMap).sort((a,b)=>b[1].clicks-a[1].clicks);
 
-  // Per-page aggregates
-  const pageMap={};
-  allRows.forEach(row=>{
-    if(!pageMap[row.page])pageMap[row.page]={clicks:0,impr:0,ctrSum:0,posSum:0,n:0};
-    pageMap[row.page].clicks+=row.clicks;
-    pageMap[row.page].impr+=row.impressions;
-    pageMap[row.page].ctrSum+=row.ctr;
-    pageMap[row.page].posSum+=row.pos;
-    pageMap[row.page].n++;
+  const grid=document.getElementById('vertGrid');
+  if(!grid)return;
+  if(!sorted.length){
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--sub);font-size:10px;padding:18px">No data yet — connect GSC and Sync</div>';
+    return;
+  }
+
+  // Destroy old vertical charts
+  Object.values(_vertCharts).forEach(ch=>{try{ch.destroy();}catch(e){}});
+  _vertCharts={};
+
+  grid.innerHTML=sorted.map(([name,d])=>{
+    const share=((d.clicks/totalClicks)*100).toFixed(1);
+    const avgPos=d.posN?(d.posSum/d.posN).toFixed(1):'—';
+    const color=VERT_COLORS[name]||'#686868';
+    return `<div class="vert-card" onclick="filterByVertical('${name.replace(/'/g,"\\'")}',this)">
+      <div class="vert-card-hd">
+        <span class="vert-name">${name}</span>
+        <span class="vert-share">${share}%</span>
+      </div>
+      <div class="vert-stats">
+        <div><div class="vert-stat-v" style="color:${color}">${fmtK(d.clicks)}</div><div class="vert-stat-l">Clicks</div></div>
+        <div><div class="vert-stat-v">${fmtK(d.impr)}</div><div class="vert-stat-l">Impr.</div></div>
+        <div><div class="vert-stat-v">${avgPos}</div><div class="vert-stat-l">Avg. Pos.</div></div>
+        <div><div class="vert-stat-v">${d.urlSet.size}</div><div class="vert-stat-l">Pages</div></div>
+      </div>
+      <div class="vert-chart"><canvas id="vChart_${name.replace(/\s+/g,'_')}"></canvas></div>
+    </div>`;
+  }).join('');
+
+  // Draw mini bar charts per vertical
+  requestAnimationFrame(()=>{
+    sorted.forEach(([name,d])=>{
+      const canvasId='vChart_'+name.replace(/\s+/g,'_');
+      const el=document.getElementById(canvasId);
+      if(!el)return;
+      // Build 8-bucket distribution from rows for this vertical
+      const vRows=rows.filter(r=>getVertical(r.url,r.domain)===name);
+      // Group by URL, take top 8 pages by clicks
+      const pgMap={};
+      vRows.forEach(r=>{if(!pgMap[r.url])pgMap[r.url]=0;pgMap[r.url]+=r.clicks;});
+      const labels=Object.entries(pgMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([u])=>{
+        try{return new URL(u).pathname.replace(/^\/|\/$/g,'').split('/').slice(-1)[0]||'/';}
+        catch(e){return u.split('/').pop()||u;}
+      });
+      const vals=Object.entries(pgMap).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([,v])=>v);
+      const color=VERT_COLORS[name]||'#686868';
+      _vertCharts[name]=new Chart(el,{
+        type:'bar',
+        data:{labels,datasets:[{data:vals,backgroundColor:color+'99',borderRadius:2}]},
+        options:{
+          responsive:true,maintainAspectRatio:false,
+          plugins:{legend:{display:false},tooltip:{
+            callbacks:{label:ctx=>`${ctx.raw.toLocaleString()} clicks`}
+          }},
+          scales:{x:{display:false},y:{display:false,beginAtZero:true}}
+        }
+      });
+    });
+  });
+}
+
+function filterByVertical(name,card){
+  // Toggle filter
+  const wasSelected=card.classList.contains('sel');
+  document.querySelectorAll('.vert-card').forEach(c=>c.classList.remove('sel'));
+  const kwvf=document.getElementById('kwVertFilter');
+  if(wasSelected){
+    // Deselect — show all
+    if(kwvf) kwvf.value='all';
+    renderKWMatrix(buildFilteredRows());
+    renderBlogTable(buildFilteredRows());
+    renderTopPages(buildFilteredRows());
+    renderTopQueries(buildFilteredRows());
+    const lbl=document.getElementById('vertFilterLabel');
+    if(lbl)lbl.textContent='';
+  }else{
+    card.classList.add('sel');
+    if(kwvf) kwvf.value=name;
+    const filtered=buildFilteredRows().filter(r=>getVertical(r.url,r.domain)===name);
+    renderKWMatrix(filtered);
+    renderBlogTable(filtered);
+    renderTopPages(filtered);
+    renderTopQueries(filtered);
+    const lbl=document.getElementById('vertFilterLabel');
+    if(lbl)lbl.textContent='Filtered: '+name;
+  }
+}
+
+// ── BLOG TABLE ────────────────────────────────────────────────────────────
+function renderBlogTable(rows){
+  if(!rows) rows=buildFilteredRows();
+  const bdf=document.getElementById('blogDomainFilter');
+  const domainFilter=bdf?bdf.value:'all';
+  // Aggregate blog rows
+  const urlMap={};
+  rows.forEach(r=>{
+    if(getVertical(r.url,r.domain)!=='Blog') return;
+    if(domainFilter!=='all'&&r.domain!==domainFilter) return;
+    if(!urlMap[r.url]) urlMap[r.url]={url:r.url,domain:r.domain,clicks:0,impr:0,ctrSum:0,posSum:0,n:0,topQ:''};
+    urlMap[r.url].clicks+=r.clicks;
+    urlMap[r.url].impr+=r.impressions;
+    urlMap[r.url].ctrSum+=r.ctr;
+    urlMap[r.url].posSum+=r.pos;
+    urlMap[r.url].n++;
+    if(!urlMap[r.url].topQ&&r.clicks>0) urlMap[r.url].topQ=r.query;
+  });
+  const sorted=Object.values(urlMap).sort((a,b)=>b.clicks-a.clicks).slice(0,50);
+  const tb=document.querySelector('#tBlog tbody');
+  if(!tb)return;
+  if(!sorted.length){
+    tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--sub);font-size:10px;padding:16px;border:none">No blog URLs found — ensure blog.impacteers.com and /blog/ pages are connected in GSC</td></tr>';
+    return;
+  }
+  tb.innerHTML=sorted.map(r=>{
+    const avgPos=r.n?(r.posSum/r.n).toFixed(1):'—';
+    const avgCTR=r.n?(r.ctrSum/r.n*100).toFixed(1)+'%':'—';
+    let slug=r.url;
+    try{slug=new URL(r.url).pathname;} catch(e){}
+    const pos=parseFloat(avgPos)||99;
+    return `<tr>
+      <td class="url" title="${r.url}">${slug}</td>
+      <td><span class="domain-badge">${r.domain}</span></td>
+      <td class="nr">${r.clicks.toLocaleString()}</td>
+      <td class="nr">${fmtK(r.impr)}</td>
+      <td class="nr">${avgCTR}</td>
+      <td class="nr"><span class="rdot ${rc(pos)}">${avgPos}</span></td>
+      <td style="font-size:9px;color:var(--sub);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.topQ||'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── KEYWORD × PAGE MATRIX ────────────────────────────────────────────────
+function renderKWMatrix(rows){
+  if(!rows) rows=buildFilteredRows();
+  const kwvf=document.getElementById('kwVertFilter');
+  const vertFilter=kwvf?kwvf.value:'all';
+
+  // Group rows by vertical → url, flatten to sorted list
+  const byVert={};
+  rows.forEach(r=>{
+    const v=getVertical(r.url,r.domain);
+    if(vertFilter!=='all'&&v!==vertFilter) return;
+    if(!byVert[v]) byVert[v]={};
+    if(!byVert[v][r.url]) byVert[v][r.url]={domain:r.domain,clicks:0,queries:[]};
+    byVert[v][r.url].clicks+=r.clicks;
+    byVert[v][r.url].queries.push(r);
   });
 
-  // Top pages by clicks
-  const topPages=Object.entries(pageMap).sort((a,b)=>b[1].clicks-a[1].clicks).slice(0,20);
-  const tbP=document.querySelector('#tPages tbody');
-  if(tbP){
-    tbP.innerHTML=topPages.length?topPages.map(([url,d],i)=>{
-      const tier=i<3?'<span class="b bg">Top 3</span>':i<10?'<span class="b bo">Top 10</span>':'<span class="b bm">Top 20</span>';
-      const ctr=d.n?(d.ctrSum/d.n*100).toFixed(1)+'%':'—';
-      return `<tr><td class="url" title="${url}">${url}</td><td class="nr">${d.clicks.toLocaleString()}</td><td class="nr">${tier}</td><td class="nr">${ctr}</td></tr>`;
-    }).join(''):`<tr><td colspan="4" style="text-align:center;color:var(--sub);font-size:10px;padding:14px;border:none">No clicks data returned</td></tr>`;
+  const tb=document.querySelector('#tKWMatrix tbody');
+  if(!tb)return;
+  if(!Object.keys(byVert).length){
+    tb.innerHTML='<tr><td colspan="7" style="text-align:center;color:var(--sub);font-size:10px;padding:16px;border:none">No data — connect GSC and Sync</td></tr>';
+    return;
   }
 
-  // Per-query aggregates
-  const queryMap={};
-  allRows.forEach(row=>{
-    if(!queryMap[row.query])queryMap[row.query]={clicks:0,impr:0,ctrSum:0,posSum:0,n:0};
-    queryMap[row.query].clicks+=row.clicks;
-    queryMap[row.query].impr+=row.impressions;
-    queryMap[row.query].ctrSum+=row.ctr;
-    queryMap[row.query].posSum+=row.pos;
-    queryMap[row.query].n++;
+  let html='';
+  Object.entries(byVert).sort((a,b)=>
+    Object.values(b[1]).reduce((s,u)=>s+u.clicks,0)-Object.values(a[1]).reduce((s,u)=>s+u.clicks,0)
+  ).forEach(([vert,pages])=>{
+    const vertTotal=Object.values(pages).reduce((s,u)=>s+u.clicks,0);
+    const color=VERT_COLORS[vert]||'#686868';
+    html+=`<tr class="kw-group-hd"><td colspan="7" style="color:${color}">▾ ${vert} — ${vertTotal.toLocaleString()} clicks · ${Object.keys(pages).length} pages</td></tr>`;
+    Object.entries(pages).sort((a,b)=>b[1].clicks-a[1].clicks).slice(0,20).forEach(([url,pd])=>{
+      let slug=url;try{slug=new URL(url).pathname;}catch(e){}
+      // Sort queries by clicks desc
+      pd.queries.sort((a,b)=>b.clicks-a.clicks).slice(0,5).forEach((qr,qi)=>{
+        const pos=parseFloat(qr.pos)||99;
+        html+=`<tr class="kw-child">
+          <td style="color:${color};font-size:9px;padding-left:14px">${qi===0?vert:''}</td>
+          <td class="url" style="font-size:9px" title="${url}">${qi===0?slug:''}</td>
+          <td style="font-size:10px">${qr.query}</td>
+          <td class="nr">${qr.clicks}</td>
+          <td class="nr">${fmtK(qr.impressions)}</td>
+          <td class="nr">${(qr.ctr*100).toFixed(1)}%</td>
+          <td class="nr"><span class="rdot ${rc(pos)}" style="width:22px;height:22px;font-size:9px">${qr.pos.toFixed(1)}</span></td>
+        </tr>`;
+      });
+    });
   });
+  tb.innerHTML=html;
+}
 
-  // Top queries by clicks
-  const topQ=Object.entries(queryMap).sort((a,b)=>b[1].clicks-a[1].clicks).slice(0,20);
-  const tbQ=document.querySelector('#tQueries tbody');
-  if(tbQ){
-    tbQ.innerHTML=topQ.length?topQ.map(([q,d],i)=>{
-      const tier=i<3?'<span class="b bg">Top 3</span>':i<10?'<span class="b bo">Top 10</span>':'<span class="b bm">Top 20</span>';
-      const pos=d.n?(d.posSum/d.n).toFixed(1):0;
-      return `<tr><td style="font-size:10px">${q}</td><td class="nr">${d.clicks.toLocaleString()}</td><td class="nr"><span class="rdot ${rc(pos)}">${pos}</span></td><td class="nr">${tier}</td></tr>`;
-    }).join(''):`<tr><td colspan="4" style="text-align:center;color:var(--sub);font-size:10px;padding:14px;border:none">No data</td></tr>`;
-  }
+// ── TOP PAGES (domain-filtered) ───────────────────────────────────────────
+function renderTopPages(rows){
+  if(!rows)rows=buildFilteredRows();
+  const pgMap={};
+  rows.forEach(r=>{
+    if(!pgMap[r.url])pgMap[r.url]={clicks:0,impr:0,ctrSum:0,n:0};
+    pgMap[r.url].clicks+=r.clicks;pgMap[r.url].impr+=r.impressions;pgMap[r.url].ctrSum+=r.ctr;pgMap[r.url].n++;
+  });
+  const top=Object.entries(pgMap).sort((a,b)=>b[1].clicks-a[1].clicks).slice(0,20);
+  const tb=document.querySelector('#tPages tbody');
+  if(!tb)return;
+  tb.innerHTML=top.length?top.map(([url,d],i)=>{
+    const tier=i<3?'<span class="b bg">Top 3</span>':i<10?'<span class="b bo">Top 10</span>':'<span class="b bm">Top 20</span>';
+    const ctr=d.n?(d.ctrSum/d.n*100).toFixed(1)+'%':'—';
+    let slug=url;try{slug=new URL(url).pathname;}catch(e){}
+    return `<tr><td class="url" title="${url}">${slug}</td><td class="nr">${d.clicks.toLocaleString()}</td><td class="nr">${tier}</td><td class="nr">${ctr}</td></tr>`;
+  }).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--sub);font-size:10px;padding:14px;border:none">No data</td></tr>';
+}
 
-  // Rank pages by best avg position (min 10 impr)
-  const bestPages=Object.entries(pageMap).filter(([,d])=>d.impr>=10).sort((a,b)=>(a[1].posSum/a[1].n)-(b[1].posSum/b[1].n)).slice(0,10);
-  const tbRP=document.querySelector('#tRankPages tbody');
-  if(tbRP){
-    tbRP.innerHTML=bestPages.length?bestPages.map(([url,d])=>{
-      const pos=(d.posSum/d.n).toFixed(1);
-      const ctr=d.n?(d.ctrSum/d.n*100).toFixed(1)+'%':'—';
-      return `<tr><td class="url" title="${url}">${url}</td><td class="nr"><span class="rdot ${rc(pos)}">${pos}</span></td><td class="nr">${d.impr.toLocaleString()}</td><td class="nr">${ctr}</td></tr>`;
-    }).join(''):`<tr><td colspan="4" style="text-align:center;color:var(--sub);font-size:10px;padding:14px;border:none">Insufficient data</td></tr>`;
-  }
+function renderTopQueries(rows){
+  if(!rows)rows=buildFilteredRows();
+  const qMap={};
+  rows.forEach(r=>{
+    if(!qMap[r.query])qMap[r.query]={clicks:0,posSum:0,n:0};
+    qMap[r.query].clicks+=r.clicks;qMap[r.query].posSum+=r.pos;qMap[r.query].n++;
+  });
+  const top=Object.entries(qMap).sort((a,b)=>b[1].clicks-a[1].clicks).slice(0,20);
+  const tb=document.querySelector('#tQueries tbody');
+  if(!tb)return;
+  tb.innerHTML=top.length?top.map(([q,d],i)=>{
+    const tier=i<3?'<span class="b bg">Top 3</span>':i<10?'<span class="b bo">Top 10</span>':'<span class="b bm">Top 20</span>';
+    const avgPos=d.n?(d.posSum/d.n).toFixed(1):0;
+    return `<tr><td style="font-size:10px">${q}</td><td class="nr">${d.clicks.toLocaleString()}</td><td class="nr"><span class="rdot ${rc(avgPos)}">${avgPos}</span></td><td class="nr">${tier}</td></tr>`;
+  }).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--sub);font-size:10px;padding:14px;border:none">No data</td></tr>';
+}
 
-  // Rank queries by best avg position
-  const bestQ=Object.entries(queryMap).filter(([,d])=>d.impr>=10).sort((a,b)=>(a[1].posSum/a[1].n)-(b[1].posSum/b[1].n)).slice(0,10);
-  const tbRQ=document.querySelector('#tRankQ tbody');
-  if(tbRQ){
-    tbRQ.innerHTML=bestQ.length?bestQ.map(([q,d])=>{
-      const pos=(d.posSum/d.n).toFixed(1);
-      const ctr=d.n?(d.ctrSum/d.n*100).toFixed(1)+'%':'—';
-      return `<tr><td style="font-size:10px">${q}</td><td class="nr"><span class="rdot ${rc(pos)}">${pos}</span></td><td class="nr">${d.impr.toLocaleString()}</td><td class="nr">${ctr}</td></tr>`;
-    }).join(''):`<tr><td colspan="4" style="text-align:center;color:var(--sub);font-size:10px;padding:14px;border:none">Insufficient data</td></tr>`;
-  }
+function renderRankPages(rows){
+  if(!rows)rows=buildFilteredRows();
+  const pgMap={};
+  rows.forEach(r=>{
+    if(!pgMap[r.url])pgMap[r.url]={impr:0,ctrSum:0,posSum:0,n:0};
+    pgMap[r.url].impr+=r.impressions;pgMap[r.url].ctrSum+=r.ctr;pgMap[r.url].posSum+=r.pos;pgMap[r.url].n++;
+  });
+  const best=Object.entries(pgMap).filter(([,d])=>d.impr>=10).sort((a,b)=>(a[1].posSum/a[1].n)-(b[1].posSum/b[1].n)).slice(0,10);
+  const tb=document.querySelector('#tRankPages tbody');
+  if(!tb)return;
+  tb.innerHTML=best.length?best.map(([url,d])=>{
+    const pos=(d.posSum/d.n).toFixed(1);
+    const ctr=d.n?(d.ctrSum/d.n*100).toFixed(1)+'%':'—';
+    let slug=url;try{slug=new URL(url).pathname;}catch(e){}
+    return `<tr><td class="url" title="${url}">${slug}</td><td class="nr"><span class="rdot ${rc(pos)}">${pos}</span></td><td class="nr">${fmtK(d.impr)}</td><td class="nr">${ctr}</td></tr>`;
+  }).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--sub);font-size:10px;padding:14px;border:none">Insufficient data (need ≥10 impressions)</td></tr>';
+}
 
-  // Segmentation matrix — derived live from GSC data
-  const qArr=Object.entries(queryMap).map(([q,d])=>({item:q,pos:d.posSum/d.n,ctr:d.ctrSum/d.n,impr:d.impr,clicks:d.clicks}));
-  const fmt=(n)=>n>=1000?(n/1000).toFixed(1)+'K':n.toString();
-  const wins  =qArr.filter(r=>r.pos<=10&&r.ctr>=0.03).sort((a,b)=>b.clicks-a.clicks).slice(0,5);
-  const attn  =qArr.filter(r=>r.impr>=500&&r.ctr<0.02).sort((a,b)=>b.impr-a.impr).slice(0,5);
-  const opps  =qArr.filter(r=>r.pos>10&&r.pos<=20&&r.impr>=200).sort((a,b)=>b.impr-a.impr).slice(0,5);
-  const weak  =qArr.filter(r=>r.pos>20&&r.clicks<=2).sort((a,b)=>b.impr-a.impr).slice(0,5);
-  const noRows=(cols,msg)=>`<tr><td colspan="${cols}" style="text-align:center;color:var(--sub);font-size:10px;padding:12px;border:none">${msg}</td></tr>`;
-  document.querySelector('#tSW tbody').innerHTML =wins.length ?wins.map(r=>`<tr><td style="font-size:10px">${r.item}</td><td class="nr">${r.pos.toFixed(1)}</td><td class="nr">${(r.ctr*100).toFixed(1)}%</td><td class="nr">${r.clicks}</td></tr>`).join('') :noRows(4,'No quick wins yet — keep building');
-  document.querySelector('#tSH tbody').innerHTML =attn.length ?attn.map(r=>`<tr><td style="font-size:10px">${r.item}</td><td class="nr">${r.pos.toFixed(1)}</td><td class="nr">${(r.ctr*100).toFixed(1)}%</td><td class="nr">${fmt(r.impr)}</td></tr>`).join('') :noRows(4,'None identified');
-  document.querySelector('#tSO tbody').innerHTML =opps.length ?opps.map(r=>`<tr><td style="font-size:10px">${r.item}</td><td class="nr">${r.pos.toFixed(1)}</td><td class="nr">${fmt(r.impr)}</td><td class="nr"><span class="b bo">Pos 11-20</span></td></tr>`).join('') :noRows(4,'None identified');
-  document.querySelector('#tSWk tbody').innerHTML=weak.length ?weak.map(r=>`<tr><td style="font-size:10px">${r.item}</td><td class="nr">${r.pos.toFixed(1)}</td><td class="nr">${(r.ctr*100).toFixed(1)}%</td><td class="nr">${r.clicks}</td></tr>`).join('') :noRows(4,'None identified');
+function renderRankQueries(rows){
+  if(!rows)rows=buildFilteredRows();
+  const qMap={};
+  rows.forEach(r=>{
+    if(!qMap[r.query])qMap[r.query]={impr:0,ctrSum:0,posSum:0,n:0};
+    qMap[r.query].impr+=r.impressions;qMap[r.query].ctrSum+=r.ctr;qMap[r.query].posSum+=r.pos;qMap[r.query].n++;
+  });
+  const best=Object.entries(qMap).filter(([,d])=>d.impr>=10).sort((a,b)=>(a[1].posSum/a[1].n)-(b[1].posSum/b[1].n)).slice(0,10);
+  const tb=document.querySelector('#tRankQ tbody');
+  if(!tb)return;
+  tb.innerHTML=best.length?best.map(([q,d])=>{
+    const pos=(d.posSum/d.n).toFixed(1);
+    const ctr=d.n?(d.ctrSum/d.n*100).toFixed(1)+'%':'—';
+    return `<tr><td style="font-size:10px">${q}</td><td class="nr"><span class="rdot ${rc(pos)}">${pos}</span></td><td class="nr">${fmtK(d.impr)}</td><td class="nr">${ctr}</td></tr>`;
+  }).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--sub);font-size:10px;padding:14px;border:none">Insufficient data</td></tr>';
 }
 
 async function syncGBP(){
@@ -1399,6 +1825,56 @@ async function syncGBP(){
   setKPI('Calls',totalCalls.toLocaleString());
   setKPI('Directions',totalDirs.toLocaleString());
   setKPI('Profile Clicks',(totalClicks+totalCalls+totalDirs).toLocaleString());
+}
+
+async function syncGoogleAds(){
+  // Requires GOOGLE_ADS_DEVELOPER_TOKEN + GOOGLE_ADS_CUSTOMER_ID in Render env vars
+  const{start,end}=getDateRange();
+  try{
+    const r=await fetch(`/api/gads/campaigns?start=${start}&end=${end}`);
+    const d=await r.json();
+    if(d.error){
+      console.warn('Google Ads:',d.error);
+      // Show the setup guide in the Ads tab
+      const notice=document.querySelector('.gads-info');
+      if(notice&&d.error.includes('not set')){
+        notice.style.borderColor='rgba(232,170,170,.4)';
+      }
+      return;
+    }
+    const rows=d.results||[];
+    let totalSpend=0,totalLeads=0,totalClicks=0;
+    const campaigns=rows.map(r=>{
+      const spend=(r.metrics?.costMicros||0)/1e6;
+      const leads=r.metrics?.conversions||0;
+      const clicks=r.metrics?.clicks||0;
+      const cpc=(r.metrics?.averageCpc||0)/1e6;
+      totalSpend+=spend;totalLeads+=leads;totalClicks+=clicks;
+      return{name:r.campaign?.name||'—',spend,leads,clicks,cpc,status:r.campaign?.status};
+    });
+    // Populate Google Ads table
+    const tbGA=document.querySelector('#tGAds tbody');
+    if(tbGA){
+      tbGA.innerHTML=campaigns.length?campaigns.map(c=>`<tr>
+        <td style="font-size:10px">${c.name}</td>
+        <td class="nr">$${c.spend.toFixed(2)}</td>
+        <td class="nr">${c.clicks.toLocaleString()}</td>
+        <td class="nr">${Math.round(c.leads)}</td>
+        <td class="nr">${c.leads?'$'+(c.spend/c.leads).toFixed(2):'—'}</td>
+        <td class="nr"><span class="b ${c.status==='ENABLED'?'bg':'bm'}">${c.status||'—'}</span></td>
+      </tr>`).join(''):emptyTable('tGAds',6,'No active campaigns found')||'';
+    }
+    _leads.ads=Math.round(totalLeads);
+    setKPI('Ads Leads',Math.round(totalLeads).toString());
+    setKPI('Total Spend','$'+Math.round(totalSpend).toLocaleString());
+    if(totalClicks>0) setKPI('Ads CPC','$'+(totalSpend/totalClicks).toFixed(2));
+    if(totalLeads>0)  setKPI('Ads CPA','$'+(totalSpend/totalLeads).toFixed(2));
+    if(totalSpend>0)  setKPI('ROAS',((totalLeads*50)/totalSpend).toFixed(1)+'×');
+    // Hide the setup guide if we got real data
+    const notice=document.querySelector('.gads-info');
+    if(notice&&campaigns.length) notice.style.display='none';
+    refreshLeadsChart(_leads.organic,_leads.ads,_leads.gbp,_leads.meta,_leads.social);
+  }catch(e){console.warn('Google Ads sync error:',e.message);}
 }
 
 async function syncMeta(){
