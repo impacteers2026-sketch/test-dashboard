@@ -23,15 +23,17 @@ app.use((req, res, next) => {
 // ── SESSION ───────────────────────────────────────────────
 // Tokens are stored server-side in the session. The browser
 // only ever sees a signed session cookie — never a raw token.
+// ── SESSION ───────────────────────────────────────────────
 app.use(session({
-  secret : process.env.SESSION_SECRET || (() => { throw new Error('SESSION_SECRET is required in .env'); })(),
+  // Use the secret from Render, or a fallback string for testing
+  secret : process.env.SESSION_SECRET || 'development_fallback_secret_321', 
   resave : false,
   saveUninitialized: false,
   cookie : {
-    secure  : process.env.NODE_ENV === 'production', // HTTPS only in prod
-    httpOnly: true,      // JS cannot read this cookie
+    secure  : process.env.NODE_ENV === 'production', 
+    httpOnly: true,
     sameSite: 'lax',
-    maxAge  : 24 * 60 * 60 * 1000  // 24 h
+    maxAge  : 24 * 60 * 60 * 1000 
   }
 }));
 
