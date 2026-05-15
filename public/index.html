@@ -964,37 +964,148 @@ let connectedProps={
   meta:{connected:false,pages:[],ig:[],adAccountId:''}
 };
 
+// Track if the page arrived via an OAuth redirect
+let _justConnected = null;
+
 (function handleURLParams(){
   const p=new URLSearchParams(window.location.search);
-  if(p.get('connected')){
-    showToast((p.get('connected')==='google'?'Google':'Meta')+' connected ✓ Fetching your properties…','success',4000);
+  const conn=p.get('connected');
+  const err=p.get('error');
+  if(conn){
+    _justConnected=conn; // remember which platform just connected
     history.replaceState({},'','/');
   }
-  if(p.get('error')){
-    showToast('Sign-in error: '+decodeURIComponent(p.get('error')),'error',7000);
+  if(err){
+    showToast('Sign-in error: '+decodeURIComponent(err),'error',8000);
     history.replaceState({},'','/');
   }
 })();
 
+// ── Load properties from a single API response object ─────────────────────
+function applyProps(status, props){
+  if(status.google){
+    connectedProps.google={
+      connected: true,
+      ga4 : props.google?.ga4  || [],
+      gsc : props.google?.gsc  || [],
+      gbp : props.google?.gbp  || []
+    };
+    renderGLists();
+  }
+  if(status.meta){
+    connectedProps.meta={
+      connected   : true,
+      pages       : props.meta?.pages || [],
+      ig          : props.meta?.ig    || [],
+      adAccountId : props.meta?.adAccountId || ''
+    };
+    renderMLists();
+  }
+  updateTrigger();
+}
+
 async function initConnection(){
+  // ── 1. Check if the server has an active session ──────────────────────
+  let status;
   try{
-    const status=await fetch('/auth/status').then(r=>r.json());
-    if(status.google||status.meta){
-      showToast('Loading your connected properties…','loading',5000);
-      const props=await fetch('/api/properties').then(r=>r.json());
-      connectedProps.google={connected:status.google,...props.google};
-      connectedProps.meta={connected:status.meta,...props.meta};
-      document.querySelectorAll('.toast-item').forEach(t=>t.remove());
-      if(status.google)renderGLists();
-      if(status.meta)renderMLists();
-      updateTrigger();
-      showToast('Properties loaded — click Sync All to pull live data','info',4000);
+    const r=await fetch('/auth/status');
+    if(!r.ok) throw new Error('auth/status returned '+r.status);
+    status=await r.json();
+  }catch(statusErr){
+    // Backend unreachable — stay on empty state silently
+    console.warn('initConnection: /auth/status failed →',statusErr.message);
+    return;
+  }
+
+  const isConnected=status.google||status.meta;
+
+  // If we just arrived from an OAuth redirect but the session says not-connected,
+  // the session cookie hasn't propagated yet — retry once after a short delay.
+  if(_justConnected && !isConnected){
+    console.warn('OAuth redirect detected but session not yet visible — retrying in 800ms');
+    await new Promise(r=>setTimeout(r,800));
+    try{
+      const r2=await fetch('/auth/status');
+      const s2=await r2.json();
+      if(s2.google||s2.meta){
+        status=s2;
+      } else {
+        // Session still not there — show a clear error
+        showToast(
+          (_justConnected==='google'?'Google':'Meta')+
+          ' auth completed but session was lost. This usually means NODE_ENV is not set to "production" in Render — please update that env var and redeploy.',
+          'error', 12000
+        );
+        _justConnected=null;
+        return;
+      }
+    }catch(e){ return; }
+  }
+
+  if(!status.google && !status.meta){
+    if(_justConnected){
+      // Shouldn't reach here after retry, but safeguard
+      showToast('Session not found after OAuth. Set NODE_ENV=production in Render and redeploy.','error',10000);
     }
-  }catch(e){console.info('Backend not reachable, showing sample data');}
+    _justConnected=null;
+    return;
+  }
+
+  // ── 2. Session confirmed — show the toast only now ─────────────────────
+  if(_justConnected){
+    showToast((_justConnected==='google'?'Google':'Meta')+' connected ✓ Loading your properties…','success',5000);
+    _justConnected=null;
+  } else {
+    showToast('Restoring your connected accounts…','loading',5000);
+  }
+
+  // ── 3. Fetch properties ────────────────────────────────────────────────
+  let props={google:{ga4:[],gsc:[],gbp:[]},meta:{pages:[],ig:[]}};
+  try{
+    const r=await fetch('/api/properties');
+    if(!r.ok) throw new Error('/api/properties returned '+r.status);
+    const raw=await r.json();
+    // Merge — keep defaults for any missing keys
+    props.google=Object.assign({ga4:[],gsc:[],gbp:[]},raw.google||{});
+    props.meta=Object.assign({pages:[],ig:[]},raw.meta||{});
+  }catch(propErr){
+    // Properties failed but auth worked — still mark as connected
+    // so the user can open the modal and see "Connected"
+    console.error('initConnection: /api/properties failed →',propErr.message);
+    showToast('Signed in but property list failed to load: '+propErr.message,'error',8000);
+    applyProps(status,props); // apply with empty arrays
+    return;
+  }
+
+  document.querySelectorAll('.toast-item').forEach(t=>t.remove());
+  applyProps(status,props);
+
+  // ── 4. Summarise what was found ────────────────────────────────────────
+  const ga4n=props.google.ga4.length;
+  const gscn=props.google.gsc.length;
+  const gbpn=props.google.gbp.length;
+  const pagn=props.meta.pages.length;
+
+  if(ga4n+gscn+gbpn+pagn===0){
+    showToast(
+      'Signed in but no properties found. Check that the Google Analytics Admin API and Search Console API are enabled in Google Cloud Console.',
+      'info', 10000
+    );
+  } else {
+    const parts=[];
+    if(ga4n) parts.push(ga4n+' GA4 propert'+(ga4n===1?'y':'ies'));
+    if(gscn) parts.push(gscn+' GSC site'+(gscn===1?'':'s'));
+    if(gbpn) parts.push(gbpn+' GBP location'+(gbpn===1?'':'s'));
+    if(pagn) parts.push(pagn+' Meta page'+(pagn===1?'':'s'));
+    showToast('Loaded: '+parts.join(', ')+' — click Sync All to pull data','success',5000);
+  }
 }
 
 function toggleConn(show){
   document.getElementById('connOverlay').classList.toggle('on',show);
+  // Re-check connection status every time the modal is opened
+  // (catches the case where the user signed in but initConnection ran too early)
+  if(show) initConnection().catch(()=>{});
 }
 
 function toggleGuide(id){document.getElementById(id)?.classList.toggle('on');}
